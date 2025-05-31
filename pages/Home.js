@@ -1,11 +1,13 @@
 import { SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
+import CadastroPerfil from './CadastroPerfil';
 
 export default function Home() {
 
   return (
     <SafeAreaView style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <Text style={styles.title}>Home</Text>
+          {/* <Text style={styles.title}>Home</Text> */}
+          <CadastroPerfil/>
         </ScrollView>
     </SafeAreaView>
   );

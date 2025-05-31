@@ -1,13 +1,30 @@
 import Menu from './components/Menu';
 import { NavigationContainer } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import CadastroPerfil from './pages/CadastroPerfil';
+import CadastroUnidade from './pages/CadastroUnidade';
+import CadastroEndereco from './pages/CadastroEndereco';
+
+const Stack = createStackNavigator();
+
+function Routes() {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MainApp" component={Menu} />
+      <Stack.Screen name="CadastroPerfil" component={CadastroPerfil} />
+      <Stack.Screen name="CadastroUnidade" component={CadastroUnidade} />
+      <Stack.Screen name="CadastroEndereco" component={CadastroEndereco} />
+    </Stack.Navigator>
+  );
+}
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <SafeAreaView style={{ flex: 1 }}>
-        <Menu />
-      </SafeAreaView>
-    </NavigationContainer>
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Routes />
+      </NavigationContainer>
+    </SafeAreaProvider>
   );
 }

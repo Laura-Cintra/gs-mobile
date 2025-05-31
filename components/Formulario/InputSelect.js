@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   },
   label: { 
     marginBottom: 4, 
-    fontWeight: '500' 
+    fontWeight: '600'
   },
   selectContainer: {
     borderWidth: 1,
