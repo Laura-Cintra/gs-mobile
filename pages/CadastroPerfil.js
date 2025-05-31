@@ -6,6 +6,7 @@ import Button from '../components/Formulario/Button';
 import colors from '../theme/colors';
 import FormTitle from '../components/Formulario/Title';
 import { useNavigation } from '@react-navigation/native';
+import MessageModal from '../components/MessageModal';
 
 export default function CadastroPerfil() {
   const navigation = useNavigation();
@@ -14,7 +15,18 @@ export default function CadastroPerfil() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalIsSuccess, setModalIsSuccess] = useState(false);
+
   const handleNext = () => {
+    if (!nome || !email || !senha) {
+      setModalMessage('Todos os campos devem ser preenchidos.');
+      setModalIsSuccess(false);
+      setModalVisible(true);
+      return;
+    }
+
     navigation.navigate('CadastroUnidade', { perfil: { nome, email, senha } });
   };
 
@@ -32,6 +44,13 @@ export default function CadastroPerfil() {
         <Button title="Limpar" backgroundColor={colors.lightSecondary} onPress={() => { setNome(''); setEmail(''); setSenha(''); }} />
         <Button title="Enviar" backgroundColor={colors.primary} onPress={handleNext} />
       </View>
+
+      <MessageModal
+        visible={modalVisible}
+        message={modalMessage}
+        isSuccess={modalIsSuccess}
+        onClose={() => setModalVisible(false)}
+      />
     </View>
   );
 }

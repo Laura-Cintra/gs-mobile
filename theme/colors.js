@@ -7,6 +7,8 @@ const colors = {
     white: '#EAECFF',
     placeholder: '#888',
     border: '#131417',
+    modalGreen: '#2ecc71',
+    modalRed: '#e74c3c',
 };
 
 export default colors;

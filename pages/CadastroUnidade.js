@@ -5,13 +5,25 @@ import InputText from '../components/Formulario/InputText';
 import Button from '../components/Formulario/Button';
 import colors from '../theme/colors';
 import { useState } from 'react';
+import MessageModal from '../components/MessageModal';
 
 export default function CadastroUnidade({ navigation, route }) {
   const [nome, setNome] = useState('');
   const [capacidade, setCapacidade] = useState('');
   const [apartamentos, setApartamentos] = useState('');
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalIsSuccess, setModalIsSuccess] = useState(false);
+
   const handleNext = () => {
+    if (!nome || !capacidade || !apartamentos) {
+      setModalMessage('Todos os campos devem ser preenchidos.');
+      setModalIsSuccess(false);
+      setModalVisible(true);
+      return;
+    }
+
     navigation.navigate('CadastroEndereco', {
       ...route.params,
       unidade: { nome, capacidade, apartamentos }
@@ -30,9 +42,16 @@ export default function CadastroUnidade({ navigation, route }) {
       <InputText label="Quantidade de apartamentos" placeholder="Ex.: 20" value={apartamentos} onChangeText={setApartamentos} keyboardType="numeric" />
 
       <View style={styles.button}>
-        <Button title="Limpar" backgroundColor={colors.lightSecondary} onPress={() => { setNome(''); setEmail(''); setSenha(''); }} />
+        <Button title="Limpar" backgroundColor={colors.lightSecondary} onPress={() => { setNome(''); setCapacidade(''); setApartamentos(''); }} />
         <Button title="Enviar" backgroundColor={colors.primary} onPress={handleNext} />
       </View>
+
+      <MessageModal
+        visible={modalVisible}
+        message={modalMessage}
+        isSuccess={modalIsSuccess}
+        onClose={() => setModalVisible(false)}
+      />
     </View>
   );
 }
