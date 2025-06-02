@@ -1,5 +1,6 @@
 import { SafeAreaView, ScrollView, StyleSheet, Text } from 'react-native';
 import CadastroPerfil from './CadastroPerfil';
+import Menu from '../components/Menu';
 
 export default function Home() {
 
@@ -7,6 +8,7 @@ export default function Home() {
     <SafeAreaView style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <Text style={styles.title}>Home</Text>
+          {/* <Menu/> */}
           {/* <CadastroPerfil/> */}
         </ScrollView>
     </SafeAreaView>

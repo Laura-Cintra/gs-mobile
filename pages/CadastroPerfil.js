@@ -31,27 +31,31 @@ export default function CadastroPerfil() {
   };
 
   return (
-    <View style={styles.container}>
-      <View>
-        <FormTitle subtitle="Perfil"/>
-        <StepCircle currentStep={1} />
-      </View>
-      <InputText label="Nome" placeholder="Insira seu nome" value={nome} onChangeText={setNome} />
-      <InputText label="E-mail" placeholder="Insira seu e-mail" value={email} onChangeText={setEmail} keyboardType="email-address"/>
-      <InputText label="Senha" placeholder="Insira sua senha" value={senha} onChangeText={setSenha} secureTextEntry/>
+    <SafeAreaView>
+      <ScrollView>
+      <View style={styles.container}>
+        <View>
+          <FormTitle subtitle="Perfil"/>
+          <StepCircle currentStep={1} />
+        </View>
+        <InputText label="Nome" placeholder="Insira seu nome" value={nome} onChangeText={setNome} />
+        <InputText label="E-mail" placeholder="Insira seu e-mail" value={email} onChangeText={setEmail} keyboardType="email-address"/>
+        <InputText label="Senha" placeholder="Insira sua senha" value={senha} onChangeText={setSenha} secureTextEntry/>
 
-      <View style={styles.button}>
-        <Button title="Limpar" backgroundColor={colors.lightSecondary} onPress={() => { setNome(''); setEmail(''); setSenha(''); }} />
-        <Button title="Enviar" backgroundColor={colors.primary} onPress={handleNext} />
-      </View>
+        <View style={styles.button}>
+          <Button title="Limpar" backgroundColor={colors.lightSecondary} onPress={() => { setNome(''); setEmail(''); setSenha(''); }} />
+          <Button title="Enviar" backgroundColor={colors.primary} onPress={handleNext} />
+        </View>
 
-      <MessageModal
-        visible={modalVisible}
-        message={modalMessage}
-        isSuccess={modalIsSuccess}
-        onClose={() => setModalVisible(false)}
-      />
-    </View>
+        <MessageModal
+          visible={modalVisible}
+          message={modalMessage}
+          isSuccess={modalIsSuccess}
+          onClose={() => setModalVisible(false)}
+        />
+      </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

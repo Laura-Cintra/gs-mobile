@@ -18,8 +18,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 10,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-    paddingBottom: 10
+    borderBottomColor: colors.placeholder,
+    paddingBottom: 15
   },
   dataContainer: {
     backgroundColor: colors.primary,

@@ -1,11 +1,10 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useEffect, useState } from 'react';
 import NotificacaoItem from '../components/NotificacaoItem';
 import Button from '../components/Formulario/Button';
 import colors from '../theme/colors';
 import { fetchNotificacoes, limparHistorico } from '../services/actions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { ScrollView } from 'react-native-gesture-handler';
 
 export default function Notificacoes() {
   const [data, setData] = useState([]);
@@ -111,7 +110,7 @@ export default function Notificacoes() {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 20,
+    paddingVertical: 50,
     paddingHorizontal: 30,
     flex: 1
   },
@@ -133,7 +132,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 20
+    marginVertical: 30
   },
   setaAtiva: {
     backgroundColor: colors.primary,

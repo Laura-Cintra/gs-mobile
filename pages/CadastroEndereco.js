@@ -1,4 +1,4 @@
-import { StyleSheet, View, Alert } from 'react-native';
+import { StyleSheet, View, Alert, SafeAreaView } from 'react-native';
 import { useState, useEffect } from 'react';
 import StepCircle from '../components/Formulario/StepCircle';
 import FormTitle from '../components/Formulario/Title';
@@ -6,6 +6,7 @@ import InputText from '../components/Formulario/InputText';
 import InputSelect from '../components/Formulario/InputSelect';
 import Button from '../components/Formulario/Button';
 import colors from '../theme/colors';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function CadastroEndereco({ navigation, route }) {
   const [logradouro, setLogradouro] = useState('');
@@ -45,23 +46,27 @@ export default function CadastroEndereco({ navigation, route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <View>
-        <FormTitle subtitle="Endereço"/>
-        <StepCircle currentStep={3} />
-      </View>
+    <SafeAreaView>
+      <ScrollView>
+      <View style={styles.container}>
+        <View>
+          <FormTitle subtitle="Endereço"/>
+          <StepCircle currentStep={3} />
+        </View>
 
-      <InputText label="Logradouro" placeholder="Insira o logradouro do seu prédio" value={logradouro} onChangeText={setLogradouro} />
-      <InputText label="CEP" placeholder="Somente números" value={cep} onChangeText={setCep} keyboardType="numeric" />
-      <InputSelect label="Cidade" selectedValue={cidade} onValueChange={setCidade} items={mockCidades} />
-      <InputSelect label="Estado" selectedValue={estado} onValueChange={setEstado} items={mockEstados} />
-      <InputSelect label="País" selectedValue={pais} onValueChange={setPais} items={mockPaises} />
+        <InputText label="Logradouro" placeholder="Insira o logradouro do seu prédio" value={logradouro} onChangeText={setLogradouro} />
+        <InputText label="CEP" placeholder="Somente números" value={cep} onChangeText={setCep} keyboardType="numeric" />
+        <InputSelect label="Cidade" selectedValue={cidade} onValueChange={setCidade} items={mockCidades} />
+        <InputSelect label="Estado" selectedValue={estado} onValueChange={setEstado} items={mockEstados} />
+        <InputSelect label="País" selectedValue={pais} onValueChange={setPais} items={mockPaises} />
 
-      <View style={styles.button}>
-        <Button title="Limpar" backgroundColor={colors.lightSecondary} onPress={() => { setLogradouro(''); setCep(''); setCidade(''); setEstado(''); setPais(''); }} />
-        <Button title="Enviar" backgroundColor={colors.primary} onPress={handleSubmit} />
+        <View style={styles.button}>
+          <Button title="Limpar" backgroundColor={colors.lightSecondary} onPress={() => { setLogradouro(''); setCep(''); setCidade(''); setEstado(''); setPais(''); }} />
+          <Button title="Enviar" backgroundColor={colors.primary} onPress={handleSubmit} />
+        </View>
       </View>
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
