@@ -6,8 +6,8 @@ export default function Home() {
   return (
     <SafeAreaView style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
-          {/* <Text style={styles.title}>Home</Text> */}
-          <CadastroPerfil/>
+          <Text style={styles.title}>Home</Text>
+          {/* <CadastroPerfil/> */}
         </ScrollView>
     </SafeAreaView>
   );

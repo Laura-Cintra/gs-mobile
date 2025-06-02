@@ -36,7 +36,7 @@ export default function CadastroPerfil() {
         <FormTitle subtitle="Perfil"/>
         <StepCircle currentStep={1} />
       </View>
-      <InputText label="Nome" placeholder="Insira o nome do seu prédio" value={nome} onChangeText={setNome} />
+      <InputText label="Nome" placeholder="Insira seu nome" value={nome} onChangeText={setNome} />
       <InputText label="E-mail" placeholder="Insira seu e-mail" value={email} onChangeText={setEmail} keyboardType="email-address"/>
       <InputText label="Senha" placeholder="Insira sua senha" value={senha} onChangeText={setSenha} secureTextEntry/>
 
