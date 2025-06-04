@@ -40,8 +40,7 @@ export default function CadastroUnidade({ navigation, route }) {
         </View>
 
         <InputText label="Nome" placeholder="Insira o nome do seu prédio" value={nome} onChangeText={setNome} />
-        <InputText label="Capacidade Reservatório (mL)" placeholder="Ex.: 10000" value={capacidade} onChangeText={setCapacidade} keyboardType="numeric" />
-        <InputText label="Quantidade de apartamentos" placeholder="Ex.: 20" value={apartamentos} onChangeText={setApartamentos} keyboardType="numeric" />
+        <InputText label="Capacidade da Unidade (mL)" placeholder="Ex.: 10000" value={capacidade} onChangeText={setCapacidade} keyboardType="numeric" />
 
         <View style={styles.button}>
           <Button title="Limpar" backgroundColor={colors.lightSecondary} onPress={() => { setNome(''); setCapacidade(''); setApartamentos(''); }} />

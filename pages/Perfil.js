@@ -9,7 +9,7 @@ export default function Perfil() {
     nome: 'Fulano da Silva',
     endereco: 'Rua teste da silva, número 256',
     volumeReservatorio: '75%',
-    apartamentos: 56,
+    ph: 6.2,
     emergencias: '20L'
   };
 
@@ -28,7 +28,7 @@ export default function Perfil() {
 
         <View style={styles.infoContainer}>
           <InfoCard value={user.volumeReservatorio} label="Volume do reservatório" />
-          <InfoCard value={user.apartamentos} label="Apartamentos" />
+          <InfoCard value={user.ph} label="Ph da água" />
           <InfoCard value={user.emergencias} label="Disponíveis para emergências" />
         </View>
 

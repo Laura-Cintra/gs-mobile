@@ -16,18 +16,19 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 15,
     alignItems: 'center',
-    width: '30%'
+    width: '32%'
   },
   value: {
     color: colors.white,
     fontWeight: 'bold',
-    fontSize: 17,
-    marginBottom: 5
+    fontSize: 18,
+    marginBottom: 5,
+    padding: 5,
   },
   label: {
     color: colors.white,
-    fontSize: 12,
+    fontSize: 11,
     textAlign: 'center',
-    fontWeight: '300',
+    fontWeight: '400',
   }
 });

@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import CadastroPerfil from './pages/CadastroPerfil';
 import CadastroUnidade from './pages/CadastroUnidade';
 import CadastroEndereco from './pages/CadastroEndereco';
+import Login from './pages/Login';
 
 const Stack = createStackNavigator();
 
@@ -15,6 +16,7 @@ function Routes() {
       <Stack.Screen name="CadastroPerfil" component={CadastroPerfil} />
       <Stack.Screen name="CadastroUnidade" component={CadastroUnidade} />
       <Stack.Screen name="CadastroEndereco" component={CadastroEndereco} />
+      <Stack.Screen name="Login" component={Login} />
     </Stack.Navigator>
   );
 }

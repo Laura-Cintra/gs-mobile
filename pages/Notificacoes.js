@@ -1,9 +1,8 @@
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useEffect, useState } from 'react';
 import NotificacaoItem from '../components/NotificacaoItem';
-import Button from '../components/Formulario/Button';
 import colors from '../theme/colors';
-import { fetchNotificacoes, limparHistorico } from '../services/actions';
+import { fetchNotificacoes } from '../services/actions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function Notificacoes() {
@@ -50,15 +49,6 @@ export default function Notificacoes() {
     }
   };
 
-  const handleLimpar = async () => {
-    try {
-      await limparHistorico();
-      getNotificacoes();
-    } catch (error) {
-      console.error('Erro ao limpar histórico:', error);
-    }
-  };
-
   return (
     <ScrollView>
     <View style={styles.container}>
@@ -97,12 +87,6 @@ export default function Notificacoes() {
           <Icon name="chevron-right" size={24} color={colors.white} />
         </TouchableOpacity>
       </View>
-
-      <Button
-        title="Limpar histórico"
-        backgroundColor={colors.primary}
-        onPress={handleLimpar}
-      />
     </View>
     </ScrollView>
   );

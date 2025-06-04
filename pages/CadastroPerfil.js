@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useState } from 'react';
 import StepCircle from '../components/Formulario/StepCircle';
 import InputText from '../components/Formulario/InputText';
@@ -47,6 +47,13 @@ export default function CadastroPerfil() {
           <Button title="Enviar" backgroundColor={colors.primary} onPress={handleNext} />
         </View>
 
+        <Text style={styles.loginText}>
+          Já tem uma conta?{' '}
+          <Text style={styles.loginLink} onPress={() => navigation.navigate('Login')}>
+            Entrar
+          </Text>
+        </Text>
+
         <MessageModal
           visible={modalVisible}
           message={modalMessage}
@@ -68,5 +75,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row', 
     justifyContent: 'center', 
     marginTop: 20
+  },
+  loginText: {
+    marginTop: 20,
+    textAlign: 'center',
+    fontSize: 15,
+    color: colors.border,
+  },
+  loginLink: {
+    color: colors.primary,
+    fontWeight: '700',
   },
 });
