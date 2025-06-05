@@ -18,8 +18,6 @@ Com a intensificação de eventos extremos, o projeto surge como uma solução t
 
 Além de sua função social e ambiental, promove a segurança hídrica e otimiza os recursos
 
----
-
 ## 1. Tecnologias
 
 - Aplicativo Mobile: Interface intuitiva para usuários como síndicos e gestores
@@ -31,8 +29,6 @@ Além de sua função social e ambiental, promove a segurança hídrica e otimiz
 - Sensores IoT: Monitoramento contínuo de nível e pH da água
 
 - OpenWeather API: Integração para previsão climática, essencial para gestão proativa
-
----
 
 ## 2. Funcionalidades
 
@@ -74,8 +70,6 @@ Todas as informações são enviadas ao final do processo, garantindo integridad
 - Cadastro, visualização, edição e remoção.
 - Todas as operações realizadas via requisições fetch para a API Java.
 
----
-
 ## 3. Como rodar o projeto
 
 1. Clone este repositório:
@@ -104,7 +98,6 @@ npx expo start --tunnel
 ```
 
 4. Escaneie o QR Code com o app Expo Go no seu celular
----
 
 ## 4. Integrantes
 
