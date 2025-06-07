@@ -1,11 +1,11 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, StyleSheet } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { View, StyleSheet } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-import Home from '../pages/Home';
-import Notificacoes from '../pages/Notificacoes';
-import Perfil from '../pages/Perfil';
-import colors from '../theme/colors';
+import Home from "../pages/Home";
+import Notificacoes from "../pages/Notificacoes";
+import Perfil from "../pages/Perfil";
+import colors from "../theme/colors";
 
 const Tab = createBottomTabNavigator();
 
@@ -20,7 +20,7 @@ export default function Menu() {
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
           height: 65,
-          position: 'absolute',
+          position: "absolute",
         },
         tabBarItemStyle: {
           paddingVertical: 5,
@@ -31,12 +31,12 @@ export default function Menu() {
         tabBarIcon: ({ focused }) => {
           let iconName;
 
-          if (route.name === 'Home') {
-            iconName = 'home';
-          } else if (route.name === 'Notificacoes') {
-            iconName = 'bell';
-          } else if (route.name === 'Perfil') {
-            iconName = 'account';
+          if (route.name === "Home") {
+            iconName = "home";
+          } else if (route.name === "Notificacoes") {
+            iconName = "bell";
+          } else if (route.name === "Perfil") {
+            iconName = "account";
           }
 
           return (
@@ -60,8 +60,8 @@ export default function Menu() {
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     flex: 1,
   },
 });

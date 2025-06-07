@@ -1,15 +1,14 @@
-import { SafeAreaView, ScrollView, StyleSheet } from 'react-native';
-import MenuSuperior from '../components/MenuSuperior';
-import Dashboard from '../components/Dashboard';
+import { SafeAreaView, ScrollView, StyleSheet } from "react-native";
+import MenuSuperior from "../components/MenuSuperior";
+import Dashboard from "../components/Dashboard";
 
 export default function Home() {
-
   return (
     <SafeAreaView style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <MenuSuperior/>
-          <Dashboard/>
-        </ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <MenuSuperior />
+        <Dashboard />
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -18,7 +17,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
   },
-  container: { 
-    flex: 1, 
+  container: {
+    flex: 1,
   },
 });

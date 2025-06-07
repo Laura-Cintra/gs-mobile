@@ -1,19 +1,19 @@
-import { View, Text, StyleSheet, Image } from 'react-native';
-import { useState } from 'react';
-import InputText from '../components/Formulario/InputText';
-import Button from '../components/Formulario/Button';
-import colors from '../theme/colors';
-import appLogo from '../assets/logo-agua.png';
-import MessageModal from '../components/MessageModal';
+import { View, Text, StyleSheet, Image } from "react-native";
+import { useState } from "react";
+import InputText from "../components/Formulario/InputText";
+import Button from "../components/Formulario/Button";
+import colors from "../theme/colors";
+import appLogo from "../assets/logo-agua.png";
+import MessageModal from "../components/MessageModal";
 
-import { useUser } from '../providers/UserContext';
-import { login, fetchUnidades } from '../services/actions';
+import { useUser } from "../providers/UserContext";
+import { login, fetchUnidades } from "../services/actions";
 
 export default function Login({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
+  const [modalMessage, setModalMessage] = useState("");
   const [modalIsSuccess, setModalIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,22 +30,22 @@ export default function Login({ navigation }) {
         await saveIdUnidade(unidades[0].idUnidade);
       }
 
-      setModalMessage('Login realizado com sucesso!');
+      setModalMessage("Login realizado com sucesso!");
       setModalIsSuccess(true);
       setModalVisible(true);
 
       setTimeout(() => {
         setModalVisible(false);
-        navigation.replace('MainApp');
+        navigation.replace("MainApp");
       }, 2000);
     } catch (error) {
-      console.log('Erro no login:', error);
+      console.log("Erro no login:", error);
 
-      let errorMessage = 'Erro desconhecido.';
+      let errorMessage = "Erro desconhecido.";
       if (error.status === 401 || error.status === 403) {
-        errorMessage = 'Credenciais inválidas.';
+        errorMessage = "Credenciais inválidas.";
       } else if (error instanceof TypeError) {
-        errorMessage = 'Erro de conexão. Verifique sua internet.';
+        errorMessage = "Erro de conexão. Verifique sua internet.";
       }
 
       setModalMessage(errorMessage);
@@ -88,10 +88,10 @@ export default function Login({ navigation }) {
       />
 
       <Text style={styles.registerText}>
-        Ainda não tem uma conta?{' '}
+        Ainda não tem uma conta?{" "}
         <Text
           style={styles.registerLink}
-          onPress={() => navigation.navigate('CadastroPerfil')}
+          onPress={() => navigation.navigate("CadastroPerfil")}
         >
           Registrar
         </Text>
@@ -112,17 +112,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
     paddingHorizontal: 35,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   title: {
     fontSize: 28,
-    textAlign: 'center',
-    fontWeight: '600',
+    textAlign: "center",
+    fontWeight: "600",
     marginBottom: 10,
   },
   header: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   logo: {
     width: 180,
@@ -131,12 +131,12 @@ const styles = StyleSheet.create({
   },
   registerText: {
     marginTop: 20,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 15,
     color: colors.border,
   },
   registerLink: {
     color: colors.primary,
-    fontWeight: '700',
+    fontWeight: "700",
   },
 });

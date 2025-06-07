@@ -1,7 +1,14 @@
-import { TextInput, Text, View, StyleSheet } from 'react-native';
-import colors from '../../theme/colors';
+import { TextInput, Text, View, StyleSheet } from "react-native";
+import colors from "../../theme/colors";
 
-export default function InputText({ label, placeholder, value, onChangeText, keyboardType = 'default', secureTextEntry = false }) {
+export default function InputText({
+  label,
+  placeholder,
+  value,
+  onChangeText,
+  keyboardType = "default",
+  secureTextEntry = false,
+}) {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
@@ -19,12 +26,12 @@ export default function InputText({ label, placeholder, value, onChangeText, key
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    marginBottom: 16 
+  container: {
+    marginBottom: 16,
   },
-  label: { 
-    marginBottom: 4, 
-    fontWeight: '500' 
+  label: {
+    marginBottom: 4,
+    fontWeight: "500",
   },
   input: {
     borderWidth: 1,

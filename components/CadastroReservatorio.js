@@ -1,36 +1,43 @@
-import { Modal, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { useEffect, useState } from 'react';
-import FormTitle from './Formulario/Title';
-import InputText from './Formulario/InputText';
-import Button from './Formulario/Button';
-import colors from '../theme/colors';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import MessageModal from './MessageModal';
+import { Modal, View, StyleSheet, TouchableOpacity } from "react-native";
+import { useEffect, useState } from "react";
+import FormTitle from "./Formulario/Title";
+import InputText from "./Formulario/InputText";
+import Button from "./Formulario/Button";
+import colors from "../theme/colors";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import MessageModal from "./MessageModal";
 
-export default function CadastroReservatorio({ visible, onClose, onCadastroSucesso, reservatorioInicial }) {
-  const [nome, setNome] = useState('');
-  const [capacidade, setCapacidade] = useState('');
+export default function CadastroReservatorio({
+  visible,
+  onClose,
+  onCadastroSucesso,
+  reservatorioInicial,
+}) {
+  const [nome, setNome] = useState("");
+  const [capacidade, setCapacidade] = useState("");
   const [messageVisible, setMessageVisible] = useState(false);
-  const [messageText, setMessageText] = useState('');
+  const [messageText, setMessageText] = useState("");
   const [messageSuccess, setMessageSuccess] = useState(false);
 
   useEffect(() => {
     if (visible && reservatorioInicial) {
-      setNome(reservatorioInicial.nomeReservatorio || '');
-      setCapacidade(reservatorioInicial.capacidadeTotalLitros?.toString() || '');
+      setNome(reservatorioInicial.nomeReservatorio || "");
+      setCapacidade(
+        reservatorioInicial.capacidadeTotalLitros?.toString() || ""
+      );
     } else if (visible) {
-      setNome('');
-      setCapacidade('');
+      setNome("");
+      setCapacidade("");
     }
-  }, [visible, reservatorioInicial])
+  }, [visible, reservatorioInicial]);
 
   const handleCadastrar = () => {
-  if (!nome || !capacidade) {
-    setMessageText('Por favor, preencha todos os campos obrigatórios.');
-    setMessageSuccess(false);
-    setMessageVisible(true);
-    return;
-  }
+    if (!nome || !capacidade) {
+      setMessageText("Por favor, preencha todos os campos obrigatórios.");
+      setMessageSuccess(false);
+      setMessageVisible(true);
+      return;
+    }
 
     onCadastroSucesso(nome, capacidade);
     handleLimpar();
@@ -38,8 +45,8 @@ export default function CadastroReservatorio({ visible, onClose, onCadastroSuces
   };
 
   const handleLimpar = () => {
-    setNome('');
-    setCapacidade('');
+    setNome("");
+    setCapacidade("");
   };
 
   return (
@@ -81,7 +88,7 @@ export default function CadastroReservatorio({ visible, onClose, onCadastroSuces
               onPress={handleLimpar}
             />
             <Button
-              title={reservatorioInicial ? 'Atualizar' : 'Enviar'}
+              title={reservatorioInicial ? "Atualizar" : "Enviar"}
               backgroundColor={colors.primary}
               onPress={handleCadastrar}
             />
@@ -101,30 +108,29 @@ export default function CadastroReservatorio({ visible, onClose, onCadastroSuces
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   title: {
     marginBottom: 20,
   },
   modalContent: {
-    width: '85%',
+    width: "85%",
     backgroundColor: colors.background,
     borderRadius: 20,
     padding: 20,
     elevation: 5,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
     marginTop: 20,
   },
   closeIcon: {
-    position: 'absolute',
+    position: "absolute",
     top: 10,
     right: 10,
     padding: 5,
-  }
+  },
 });
-

@@ -1,28 +1,35 @@
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { useState, useEffect } from 'react';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import colors from '../theme/colors';
-import { 
-  fetchReservatorios, 
-  fetchPerfilUsuario, 
-  cadastrarReservatorio, 
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import { useState, useEffect } from "react";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import colors from "../theme/colors";
+import {
+  fetchReservatorios,
+  fetchPerfilUsuario,
+  cadastrarReservatorio,
   atualizarReservatorio,
   deletarReservatorio,
-  fetchHistoricoReservatorio, 
-  fetchEndereco, 
-  fetchClimaByCidade, 
-  fetchLeituraDispositivo, 
-  fetchNotificacoes } from '../services/actions';
-import { useUser } from '../providers/UserContext';
+  fetchHistoricoReservatorio,
+  fetchEndereco,
+  fetchClimaByCidade,
+  fetchLeituraDispositivo,
+  fetchNotificacoes,
+} from "../services/actions";
+import { useUser } from "../providers/UserContext";
 
-import ModalRepositorios from '../components/Dashboard/ModalRepositorios';
-import GraficoBarras from '../components/Dashboard/GraficoBarras';
-import GraficoPizza from '../components/Dashboard/GraficoPizza';
-import CadastroReservatorio from '../components/CadastroReservatorio';
-import ChuvaContainer from '../components/Dashboard/ChuvaContainer';
-import StatusReservatorio from './Dashboard/StatusReservatorio';
-import Button from './Formulario/Button';
-import MessageModal from './MessageModal';
+import ModalRepositorios from "../components/Dashboard/ModalRepositorios";
+import GraficoBarras from "../components/Dashboard/GraficoBarras";
+import GraficoPizza from "../components/Dashboard/GraficoPizza";
+import CadastroReservatorio from "../components/CadastroReservatorio";
+import ChuvaContainer from "../components/Dashboard/ChuvaContainer";
+import StatusReservatorio from "./Dashboard/StatusReservatorio";
+import Button from "./Formulario/Button";
+import MessageModal from "./MessageModal";
 
 export default function Dashboard() {
   const { token, idUnidade, idReservatorio, saveIdReservatorio } = useUser();
@@ -38,9 +45,9 @@ export default function Dashboard() {
   const [historico, setHistorico] = useState([]);
   const [leituraAtual, setLeituraAtual] = useState(null);
   const [ultimoAlerta, setUltimoAlerta] = useState(null);
-  
+
   const [modalErrorVisible, setModalErrorVisible] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
+  const [modalMessage, setModalMessage] = useState("");
   const [modalIsSuccess, setModalIsSuccess] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [reservatorioEmEdicao, setReservatorioEmEdicao] = useState(null);
@@ -50,16 +57,19 @@ export default function Dashboard() {
       if (!repoAtual?.idReservatorio) return;
 
       try {
-        const historico = await fetchHistoricoReservatorio(token, repoAtual.idReservatorio);
+        const historico = await fetchHistoricoReservatorio(
+          token,
+          repoAtual.idReservatorio
+        );
         const ultimos7 = historico.slice(0, 7).reverse();
-        const dadosFormatados = ultimos7.map(item => ({
+        const dadosFormatados = ultimos7.map((item) => ({
           value: item.nivelLitros,
-          label: item.data_hora.split('T')[0].split('-').reverse().join('/'),
+          label: item.data_hora.split("T")[0].split("-").reverse().join("/"),
           frontColor: colors.primary,
         }));
         setHistorico(dadosFormatados);
       } catch (err) {
-        console.error('Erro ao carregar histórico:', err);
+        console.error("Erro ao carregar histórico:", err);
       }
     };
 
@@ -72,14 +82,18 @@ export default function Dashboard() {
         const lista = await fetchReservatorios(token);
         setReservatorios(lista);
 
-        const atual = lista.find(r => r.idReservatorio === idReservatorio) || lista[0];
+        const atual =
+          lista.find((r) => r.idReservatorio === idReservatorio) || lista[0];
         setRepoAtual(atual);
 
-        if (atual && (!idReservatorio || idReservatorio !== atual.idReservatorio)) {
+        if (
+          atual &&
+          (!idReservatorio || idReservatorio !== atual.idReservatorio)
+        ) {
           await saveIdReservatorio(atual.idReservatorio);
         }
       } catch (error) {
-        console.error('Erro ao buscar reservatórios:', error);
+        console.error("Erro ao buscar reservatórios:", error);
       } finally {
         setLoading(false);
       }
@@ -93,14 +107,17 @@ export default function Dashboard() {
 
     const carregarDistribuicaoStatus = async () => {
       try {
-        const historico = await fetchHistoricoReservatorio(token, repoAtual.idReservatorio);
+        const historico = await fetchHistoricoReservatorio(
+          token,
+          repoAtual.idReservatorio
+        );
 
         const statusCores = {
-          Cheio: '#4CAF50',
-          Normal: '#FFC107',
-          Baixo: '#2196F3',
-          Crítico: '#F44336',
-          Esvaziado: '#9E9E9E',
+          Cheio: "#4CAF50",
+          Normal: "#FFC107",
+          Baixo: "#2196F3",
+          Crítico: "#F44336",
+          Esvaziado: "#9E9E9E",
         };
 
         const contagem = {};
@@ -110,7 +127,10 @@ export default function Dashboard() {
           if (nome) contagem[nome] = (contagem[nome] || 0) + 1;
         });
 
-        const total = Object.values(contagem).reduce((acc, val) => acc + val, 0);
+        const total = Object.values(contagem).reduce(
+          (acc, val) => acc + val,
+          0
+        );
         if (total === 0) {
           setDadosStatus([]);
           return;
@@ -118,18 +138,21 @@ export default function Dashboard() {
 
         const formatado = Object.entries(contagem).map(([nome, qtd]) => ({
           value: qtd,
-          color: statusCores[nome] || '#000',
+          color: statusCores[nome] || "#000",
           text: nome,
         }));
 
         setDadosStatus(formatado);
       } catch (err) {
-        console.error('Erro ao carregar status do gráfico de pizza:', err);
+        console.error("Erro ao carregar status do gráfico de pizza:", err);
       }
     };
     const carregarPerfilEClima = async () => {
       try {
-        const perfilData = await fetchPerfilUsuario(token, repoAtual.idReservatorio);
+        const perfilData = await fetchPerfilUsuario(
+          token,
+          repoAtual.idReservatorio
+        );
         setPerfil(perfilData);
 
         const enderecoData = await fetchEndereco(token);
@@ -139,23 +162,27 @@ export default function Dashboard() {
           const climaData = await fetchClimaByCidade(cidade);
           setClima(climaData);
         } else {
-          setClima({ chance: 0, description: 'Cidade não cadastrada' });
+          setClima({ chance: 0, description: "Cidade não cadastrada" });
         }
       } catch (err) {
-        console.error('Erro ao carregar perfil/clima:', err);
-        setClima({ chance: 0, description: 'Erro ao carregar dados' });
+        console.error("Erro ao carregar perfil/clima:", err);
+        setClima({ chance: 0, description: "Erro ao carregar dados" });
       }
     };
 
     const carregarLeituraAtual = async () => {
       try {
-        const leitura = await fetchLeituraDispositivo(token, repoAtual.idReservatorio);
-        const ultimaLeitura = leitura.content.length > 0
-          ? leitura.content[leitura.content.length - 1]
-          : null;
+        const leitura = await fetchLeituraDispositivo(
+          token,
+          repoAtual.idReservatorio
+        );
+        const ultimaLeitura =
+          leitura.content.length > 0
+            ? leitura.content[leitura.content.length - 1]
+            : null;
         setLeituraAtual(ultimaLeitura);
       } catch (err) {
-        console.error('Erro ao carregar leitura atual:', err);
+        console.error("Erro ao carregar leitura atual:", err);
         setLeituraAtual(null);
       }
     };
@@ -172,10 +199,14 @@ export default function Dashboard() {
       const nivel = leituraAtual?.nivelPct ?? 0;
 
       try {
-        const notificacoes = await fetchNotificacoes(repoAtual.idReservatorio, nivel, 0);
+        const notificacoes = await fetchNotificacoes(
+          repoAtual.idReservatorio,
+          nivel,
+          0
+        );
         setUltimoAlerta(notificacoes.content?.[0] || null);
       } catch (err) {
-        console.error('Erro ao buscar alerta:', err);
+        console.error("Erro ao buscar alerta:", err);
       }
     };
 
@@ -184,7 +215,7 @@ export default function Dashboard() {
 
   const handleSalvarReservatorio = async (nome, capacidade) => {
     if (!nome || !capacidade || !idUnidade) {
-      console.warn('Campos obrigatórios ausentes');
+      console.warn("Campos obrigatórios ausentes");
       return;
     }
 
@@ -198,12 +229,16 @@ export default function Dashboard() {
 
     try {
       if (modoEdicao && reservatorioEmEdicao?.idReservatorio) {
-        await atualizarReservatorio(token, reservatorioEmEdicao.idReservatorio, data);
-        setModalMessage('Reservatório atualizado com sucesso.');
+        await atualizarReservatorio(
+          token,
+          reservatorioEmEdicao.idReservatorio,
+          data
+        );
+        setModalMessage("Reservatório atualizado com sucesso.");
       } else {
         const response = await cadastrarReservatorio(token, data);
         await saveIdReservatorio(response.idReservatorio);
-        setModalMessage('Reservatório cadastrado com sucesso.');
+        setModalMessage("Reservatório cadastrado com sucesso.");
       }
 
       setModalIsSuccess(true);
@@ -211,8 +246,8 @@ export default function Dashboard() {
       setRepoAtual(null);
       setLoading(true);
     } catch (error) {
-      console.error('Erro ao salvar reservatório:', error);
-      setModalMessage(error.message || 'Erro ao salvar');
+      console.error("Erro ao salvar reservatório:", error);
+      setModalMessage(error.message || "Erro ao salvar");
       setModalIsSuccess(false);
       setModalErrorVisible(true);
     }
@@ -221,19 +256,18 @@ export default function Dashboard() {
   const handleExcluirReservatorio = async () => {
     try {
       await deletarReservatorio(token, repoAtual.idReservatorio);
-      setModalMessage('Reservatório excluído com sucesso.');
+      setModalMessage("Reservatório excluído com sucesso.");
       setModalIsSuccess(true);
       setModalErrorVisible(true);
       setRepoAtual(null);
       setLoading(true);
     } catch (error) {
-      console.error('Erro ao excluir reservatório:', error);
-      setModalMessage(error.message || 'Erro ao excluir reservatório.');
+      console.error("Erro ao excluir reservatório:", error);
+      setModalMessage(error.message || "Erro ao excluir reservatório.");
       setModalIsSuccess(false);
       setModalErrorVisible(true);
     }
   };
-
 
   const handleTrocarRepo = (repo) => {
     saveIdReservatorio(repo.idReservatorio);
@@ -284,18 +318,22 @@ export default function Dashboard() {
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Icon name="swap-horizontal" size={24} color={colors.primary} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => {
-          setModoEdicao(false);
-          setReservatorioEmEdicao(null);
-          setModalCadastroVisible(true);
-        }}>
+        <TouchableOpacity
+          onPress={() => {
+            setModoEdicao(false);
+            setReservatorioEmEdicao(null);
+            setModalCadastroVisible(true);
+          }}
+        >
           <Icon name="plus-circle-outline" size={24} color={colors.primary} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => {
-          setModoEdicao(true);
-          setReservatorioEmEdicao(repoAtual);
-          setModalCadastroVisible(true);
-        }}>
+        <TouchableOpacity
+          onPress={() => {
+            setModoEdicao(true);
+            setReservatorioEmEdicao(repoAtual);
+            setModalCadastroVisible(true);
+          }}
+        >
           <Icon name="pencil-outline" size={24} color={colors.primary} />
         </TouchableOpacity>
         <TouchableOpacity onPress={handleExcluirReservatorio}>
@@ -316,15 +354,17 @@ export default function Dashboard() {
         <GraficoPizza dadosStatus={dadosStatus} />
 
         <View style={styles.alertContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
             <Icon name="alert" size={26} color={colors.modalRed} />
             <Text style={styles.alertTitle}>Alerta:</Text>
           </View>
-          <Text style={styles.alertText}>{ultimoAlerta?.mensagem || 'Nenhum alerta no momento'}</Text>
+          <Text style={styles.alertText}>
+            {ultimoAlerta?.mensagem || "Nenhum alerta no momento"}
+          </Text>
         </View>
       </View>
 
-      <View style={{ flex: 1, alignItems: 'center' }}>
+      <View style={{ flex: 1, alignItems: "center" }}>
         <ChuvaContainer clima={clima} />
       </View>
 
@@ -365,56 +405,56 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 10,
   },
   repoHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     marginBottom: 20,
   },
   repoName: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   graphRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 20,
   },
   alertContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
     marginLeft: 5,
-    maxWidth: '60%',
+    maxWidth: "60%",
     borderRadius: 10,
     height: 120,
   },
   alertTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginLeft: 6,
   },
   alertText: {
     fontSize: 12,
     marginTop: 6,
-    maxWidth: '62%',
+    maxWidth: "62%",
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: colors.background,
   },
   centeredButton: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   sensorAviso: {
-    textAlign: 'center',
+    textAlign: "center",
     color: colors.modalRed,
     fontSize: 13,
     marginBottom: 20,

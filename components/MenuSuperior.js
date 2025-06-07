@@ -1,16 +1,22 @@
-import { View, Image, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/SimpleLineIcons';
-import logo from '../assets/logo-agua.png';
-import colors from '../theme/colors';
-import { useUser } from '../providers/UserContext';
+import {
+  View,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/SimpleLineIcons";
+import logo from "../assets/logo-agua.png";
+import colors from "../theme/colors";
+import { useUser } from "../providers/UserContext";
 
 export default function MenuSuperior() {
   const navigation = useNavigation();
   const { logout } = useUser();
 
   const handleHome = () => {
-    navigation.navigate('MainApp');
+    navigation.navigate("MainApp");
   };
 
   const handleLogout = async () => {
@@ -21,11 +27,7 @@ export default function MenuSuperior() {
     <SafeAreaView>
       <View style={styles.header}>
         <TouchableOpacity onPress={handleHome}>
-          <Image
-            source={logo}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+          <Image source={logo} style={styles.logo} resizeMode="contain" />
         </TouchableOpacity>
 
         <TouchableOpacity onPress={handleLogout}>
@@ -38,14 +40,14 @@ export default function MenuSuperior() {
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderColor: colors.border,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   logo: {
     width: 50,

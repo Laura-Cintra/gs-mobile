@@ -1,5 +1,5 @@
-import { createContext, useContext, useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createContext, useContext, useState, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const UserContext = createContext();
 
@@ -11,9 +11,9 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     // carregar dados salvos no storage ao abrir o app
     const loadStoredData = async () => {
-      const savedToken = await AsyncStorage.getItem('token');
-      const savedUnidade = await AsyncStorage.getItem('idUnidade');
-      const savedReservatorio = await AsyncStorage.getItem('idReservatorio');
+      const savedToken = await AsyncStorage.getItem("token");
+      const savedUnidade = await AsyncStorage.getItem("idUnidade");
+      const savedReservatorio = await AsyncStorage.getItem("idReservatorio");
 
       if (savedToken) setToken(savedToken);
       if (savedUnidade) setIdUnidade(Number(savedUnidade));
@@ -25,17 +25,17 @@ export const UserProvider = ({ children }) => {
 
   const login = async (tokenRecebido) => {
     setToken(tokenRecebido);
-    await AsyncStorage.setItem('token', tokenRecebido);
+    await AsyncStorage.setItem("token", tokenRecebido);
   };
 
   const saveIdUnidade = async (id) => {
     setIdUnidade(id);
-    await AsyncStorage.setItem('idUnidade', id.toString());
+    await AsyncStorage.setItem("idUnidade", id.toString());
   };
 
   const saveIdReservatorio = async (id) => {
     setIdReservatorio(id);
-    await AsyncStorage.setItem('idReservatorio', id.toString());
+    await AsyncStorage.setItem("idReservatorio", id.toString());
   };
 
   const logout = async () => {
@@ -46,15 +46,17 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{
-      token,
-      idUnidade,
-      idReservatorio,
-      login,
-      logout,
-      saveIdUnidade,
-      saveIdReservatorio,
-    }}>
+    <UserContext.Provider
+      value={{
+        token,
+        idUnidade,
+        idReservatorio,
+        login,
+        logout,
+        saveIdUnidade,
+        saveIdReservatorio,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

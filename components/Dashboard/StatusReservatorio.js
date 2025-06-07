@@ -1,29 +1,29 @@
-import { View, Text, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import colors from '../../theme/colors';
+import { View, Text, StyleSheet } from "react-native";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import colors from "../../theme/colors";
 
 export default function StatusReservatorio({ leitura }) {
   const nivel = leitura?.nivelPct ?? 0;
   const ph = leitura?.phInt ?? 0;
 
-  let statusPh = 'Desconhecido';
-  let descPH = 'Valor inválido';
+  let statusPh = "Desconhecido";
+  let descPH = "Valor inválido";
 
   if (ph >= 0 && ph < 5.5) {
-    statusPh = 'Baixo';
-    descPH = 'Água muito ácida';
+    statusPh = "Baixo";
+    descPH = "Água muito ácida";
   } else if (ph >= 5.5 && ph < 6.5) {
-    statusPh = 'Ácido';
-    descPH = 'Ligeiramente ácido';
+    statusPh = "Ácido";
+    descPH = "Ligeiramente ácido";
   } else if (ph >= 6.5 && ph <= 7.5) {
-    statusPh = 'Neutro';
-    descPH = 'pH ideal';
+    statusPh = "Neutro";
+    descPH = "pH ideal";
   } else if (ph > 7.5 && ph <= 8.5) {
-    statusPh = 'Alcalino';
-    descPH = 'Ligeiramente alcalino';
+    statusPh = "Alcalino";
+    descPH = "Ligeiramente alcalino";
   } else if (ph > 8.5 && ph <= 14) {
-    statusPh = 'Alto';
-    descPH = 'Água muito alcalina';
+    statusPh = "Alto";
+    descPH = "Água muito alcalina";
   }
 
   return (
@@ -57,38 +57,38 @@ export default function StatusReservatorio({ leitura }) {
 
 const styles = StyleSheet.create({
   statusContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
   },
   statusBox: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '48%',
+    flexDirection: "row",
+    alignItems: "center",
+    width: "48%",
     paddingHorizontal: 5,
     paddingVertical: 10,
     borderRadius: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     elevation: 2,
     margin: 5,
   },
   statusValue: {
     fontSize: 18,
-    fontWeight: 'bold'
+    fontWeight: "bold",
   },
   statusLabel: {
     fontSize: 17,
-    color: '#555',
+    color: "#555",
   },
   phContainer: {
-    position: 'relative',
-    alignItems: 'center',
+    position: "relative",
+    alignItems: "center",
     top: -45,
   },
   statusPh: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.border,
   },
   phDescription: {

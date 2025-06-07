@@ -1,15 +1,15 @@
-import { ActivityIndicator, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { ActivityIndicator, View } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { UserProvider, useUser } from './providers/UserContext';
+import { UserProvider, useUser } from "./providers/UserContext";
 
-import Login from './pages/Login';
-import CadastroPerfil from './pages/CadastroPerfil';
-import CadastroUnidade from './pages/CadastroUnidade';
-import CadastroEndereco from './pages/CadastroEndereco';
-import Menu from './components/Menu';
+import Login from "./pages/Login";
+import CadastroPerfil from "./pages/CadastroPerfil";
+import CadastroUnidade from "./pages/CadastroUnidade";
+import CadastroEndereco from "./pages/CadastroEndereco";
+import Menu from "./components/Menu";
 
 const Stack = createStackNavigator();
 
@@ -37,7 +37,7 @@ function Routes() {
 
   if (loading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator size="large" />
       </View>
     );

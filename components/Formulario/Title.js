@@ -11,15 +11,15 @@ export default function FormTitle({ subtitle }) {
 
 const styles = StyleSheet.create({
   titleContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginVertical: 10,
   },
   title: {
     fontSize: 30,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   subtitle: {
     fontSize: 23,
-    fontWeight: '200',
+    fontWeight: "200",
   },
 });

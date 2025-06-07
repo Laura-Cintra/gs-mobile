@@ -1,8 +1,7 @@
-import { View, Text, StyleSheet } from 'react-native';
-import { BarChart } from 'react-native-gifted-charts';
+import { View, Text, StyleSheet } from "react-native";
+import { BarChart } from "react-native-gifted-charts";
 
 export default function GraficoBarras({ dados }) {
-
   if (!Array.isArray(dados)) return null;
 
   return (
@@ -25,20 +24,20 @@ export default function GraficoBarras({ dados }) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 15,
     borderRadius: 10,
     marginBottom: 20,
-    elevation: 2
+    elevation: 2,
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: '400',
-    marginBottom: 5
+    fontWeight: "400",
+    marginBottom: 5,
   },
   subTitle: {
     fontSize: 15,
-    fontWeight: '600',
-    marginBottom: 10
-  }
+    fontWeight: "600",
+    marginBottom: 10,
+  },
 });
