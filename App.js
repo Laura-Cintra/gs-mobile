@@ -1,4 +1,4 @@
-import { ActivityIndicator, View } from "react-native";
+import { ActivityIndicator, StatusBar, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { SafeAreaProvider } from "react-native-safe-area-context";
@@ -52,6 +52,7 @@ export default function App() {
   return (
     <UserProvider>
       <SafeAreaProvider>
+        <StatusBar style="light" translucent backgroundColor="transparent" />
         <NavigationContainer>
           <Routes />
         </NavigationContainer>

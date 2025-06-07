@@ -343,7 +343,7 @@ export default function Dashboard() {
 
       {leituraAtual === null && (
         <Text style={styles.sensorAviso}>
-          Dados dos sensores serão enviados ao dashboard às 9h da manhã
+          Dados dos sensores serão enviados ao dashboard às 6h da manhã
         </Text>
       )}
 
