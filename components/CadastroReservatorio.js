@@ -1,5 +1,5 @@
 import { Modal, View, StyleSheet, TouchableOpacity } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import FormTitle from './Formulario/Title';
 import InputText from './Formulario/InputText';
 import Button from './Formulario/Button';
@@ -7,12 +7,22 @@ import colors from '../theme/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MessageModal from './MessageModal';
 
-export default function CadastroReservatorio({ visible, onClose, onCadastroSucesso }) {
+export default function CadastroReservatorio({ visible, onClose, onCadastroSucesso, reservatorioInicial }) {
   const [nome, setNome] = useState('');
   const [capacidade, setCapacidade] = useState('');
   const [messageVisible, setMessageVisible] = useState(false);
   const [messageText, setMessageText] = useState('');
   const [messageSuccess, setMessageSuccess] = useState(false);
+
+  useEffect(() => {
+    if (visible && reservatorioInicial) {
+      setNome(reservatorioInicial.nomeReservatorio || '');
+      setCapacidade(reservatorioInicial.capacidadeTotalLitros?.toString() || '');
+    } else if (visible) {
+      setNome('');
+      setCapacidade('');
+    }
+  }, [visible, reservatorioInicial])
 
   const handleCadastrar = () => {
   if (!nome || !capacidade) {
@@ -71,7 +81,7 @@ export default function CadastroReservatorio({ visible, onClose, onCadastroSuces
               onPress={handleLimpar}
             />
             <Button
-              title="Enviar"
+              title={reservatorioInicial ? 'Atualizar' : 'Enviar'}
               backgroundColor={colors.primary}
               onPress={handleCadastrar}
             />

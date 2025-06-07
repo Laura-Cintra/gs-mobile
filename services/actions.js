@@ -79,6 +79,36 @@ export async function cadastrarReservatorio(token, data) {
   return handleError(response);
 };
 
+// Atualizar um reservatório
+export async function atualizarReservatorio(token, idReservatorio, data) {
+  const response = await fetch(`${API_URL}/reservatorio/${idReservatorio}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  return handleError(response);
+}
+
+// Deletar um reservatório
+export async function deletarReservatorio(token, idReservatorio) {
+  const response = await fetch(`${API_URL}/reservatorio/${idReservatorio}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Erro ao deletar o reservatório');
+  }
+
+  return true;
+}
+
 // Leitura atual do dispositivo
 export async function fetchLeituraDispositivo(token, idReservatorio) {
   const response = await fetch(`${API_URL}/leitura-dispositivo?idReservatorio=${idReservatorio}`, {

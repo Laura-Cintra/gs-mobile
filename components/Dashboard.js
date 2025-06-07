@@ -2,7 +2,17 @@ import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'rea
 import { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../theme/colors';
-import { fetchReservatorios, fetchPerfilUsuario, cadastrarReservatorio, fetchHistoricoReservatorio, fetchEndereco, fetchClimaByCidade, fetchLeituraDispositivo, fetchNotificacoes } from '../services/actions';
+import { 
+  fetchReservatorios, 
+  fetchPerfilUsuario, 
+  cadastrarReservatorio, 
+  atualizarReservatorio,
+  deletarReservatorio,
+  fetchHistoricoReservatorio, 
+  fetchEndereco, 
+  fetchClimaByCidade, 
+  fetchLeituraDispositivo, 
+  fetchNotificacoes } from '../services/actions';
 import { useUser } from '../providers/UserContext';
 
 import ModalRepositorios from '../components/Dashboard/ModalRepositorios';
@@ -32,6 +42,8 @@ export default function Dashboard() {
   const [modalErrorVisible, setModalErrorVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [modalIsSuccess, setModalIsSuccess] = useState(false);
+  const [modoEdicao, setModoEdicao] = useState(false);
+  const [reservatorioEmEdicao, setReservatorioEmEdicao] = useState(null);
 
   useEffect(() => {
     const carregarHistorico = async () => {
@@ -136,14 +148,17 @@ export default function Dashboard() {
     };
 
     const carregarLeituraAtual = async () => {
-    try {
-      const leitura = await fetchLeituraDispositivo(token, repoAtual.idReservatorio);
-      const ultimaLeitura = leitura.content[leitura.content.length - 1];
-      setLeituraAtual(ultimaLeitura);
-    } catch (err) {
-      console.error('Erro ao carregar leitura atual:', err);
-    }
-  };
+      try {
+        const leitura = await fetchLeituraDispositivo(token, repoAtual.idReservatorio);
+        const ultimaLeitura = leitura.content.length > 0
+          ? leitura.content[leitura.content.length - 1]
+          : null;
+        setLeituraAtual(ultimaLeitura);
+      } catch (err) {
+        console.error('Erro ao carregar leitura atual:', err);
+        setLeituraAtual(null);
+      }
+    };
 
     carregarDistribuicaoStatus();
     carregarPerfilEClima();
@@ -167,34 +182,58 @@ export default function Dashboard() {
     carregarAlertaSimulado();
   }, [repoAtual, leituraAtual]);
 
-  const handleCadastrarReservatorio = async (nome, capacidade) => {
-
+  const handleSalvarReservatorio = async (nome, capacidade) => {
     if (!nome || !capacidade || !idUnidade) {
       console.warn('Campos obrigatórios ausentes');
       return;
     }
 
-    try {
-      const data = {
-        nome,
-        capacidadeTotalLitros: Number(capacidade),
-        unidade: {
-          idUnidade: Number(idUnidade),
-        },
-      };
+    const data = {
+      nome,
+      capacidadeTotalLitros: Number(capacidade),
+      unidade: {
+        idUnidade: Number(idUnidade),
+      },
+    };
 
-      const response = await cadastrarReservatorio(token, data);
-      await saveIdReservatorio(response.idReservatorio);
+    try {
+      if (modoEdicao && reservatorioEmEdicao?.idReservatorio) {
+        await atualizarReservatorio(token, reservatorioEmEdicao.idReservatorio, data);
+        setModalMessage('Reservatório atualizado com sucesso.');
+      } else {
+        const response = await cadastrarReservatorio(token, data);
+        await saveIdReservatorio(response.idReservatorio);
+        setModalMessage('Reservatório cadastrado com sucesso.');
+      }
+
+      setModalIsSuccess(true);
       setModalCadastroVisible(false);
       setRepoAtual(null);
       setLoading(true);
     } catch (error) {
-      console.error('Erro ao cadastrar reservatório:', error);
-      setModalMessage(error.message);
+      console.error('Erro ao salvar reservatório:', error);
+      setModalMessage(error.message || 'Erro ao salvar');
       setModalIsSuccess(false);
       setModalErrorVisible(true);
     }
   };
+
+  const handleExcluirReservatorio = async () => {
+    try {
+      await deletarReservatorio(token, repoAtual.idReservatorio);
+      setModalMessage('Reservatório excluído com sucesso.');
+      setModalIsSuccess(true);
+      setModalErrorVisible(true);
+      setRepoAtual(null);
+      setLoading(true);
+    } catch (error) {
+      console.error('Erro ao excluir reservatório:', error);
+      setModalMessage(error.message || 'Erro ao excluir reservatório.');
+      setModalIsSuccess(false);
+      setModalErrorVisible(true);
+    }
+  };
+
 
   const handleTrocarRepo = (repo) => {
     saveIdReservatorio(repo.idReservatorio);
@@ -224,8 +263,13 @@ export default function Dashboard() {
 
         <CadastroReservatorio
           visible={modalCadastroVisible}
-          onClose={() => setModalCadastroVisible(false)}
-          onCadastroSucesso={(nome, capacidade) => handleCadastrarReservatorio(nome, capacidade)}
+          onClose={() => {
+            setModalCadastroVisible(false);
+            setModoEdicao(false);
+            setReservatorioEmEdicao(null);
+          }}
+          onCadastroSucesso={handleSalvarReservatorio}
+          reservatorioInicial={modoEdicao ? reservatorioEmEdicao : null}
         />
       </View>
     );
@@ -240,10 +284,30 @@ export default function Dashboard() {
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Icon name="swap-horizontal" size={24} color={colors.primary} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => setModalCadastroVisible(true)}>
+        <TouchableOpacity onPress={() => {
+          setModoEdicao(false);
+          setReservatorioEmEdicao(null);
+          setModalCadastroVisible(true);
+        }}>
           <Icon name="plus-circle-outline" size={24} color={colors.primary} />
         </TouchableOpacity>
+        <TouchableOpacity onPress={() => {
+          setModoEdicao(true);
+          setReservatorioEmEdicao(repoAtual);
+          setModalCadastroVisible(true);
+        }}>
+          <Icon name="pencil-outline" size={24} color={colors.primary} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleExcluirReservatorio}>
+          <Icon name="trash-can-outline" size={24} color={colors.modalRed} />
+        </TouchableOpacity>
       </View>
+
+      {leituraAtual === null && (
+        <Text style={styles.sensorAviso}>
+          Dados dos sensores serão enviados ao dashboard às 9h da manhã
+        </Text>
+      )}
 
       <StatusReservatorio leitura={leituraAtual} />
       <GraficoBarras dados={historico} />
@@ -253,7 +317,7 @@ export default function Dashboard() {
 
         <View style={styles.alertContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Icon name="alert" size={26} color="#DC4D34" />
+            <Icon name="alert" size={26} color={colors.modalRed} />
             <Text style={styles.alertTitle}>Alerta:</Text>
           </View>
           <Text style={styles.alertText}>{ultimoAlerta?.mensagem || 'Nenhum alerta no momento'}</Text>
@@ -274,8 +338,13 @@ export default function Dashboard() {
 
       <CadastroReservatorio
         visible={modalCadastroVisible}
-        onClose={() => setModalCadastroVisible(false)}
-        onCadastroSucesso={handleCadastrarReservatorio}
+        onClose={() => {
+          setModalCadastroVisible(false);
+          setModoEdicao(false);
+          setReservatorioEmEdicao(null);
+        }}
+        onCadastroSucesso={handleSalvarReservatorio}
+        reservatorioInicial={modoEdicao ? reservatorioEmEdicao : null}
       />
 
       <MessageModal
@@ -343,5 +412,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  sensorAviso: {
+    textAlign: 'center',
+    color: colors.modalRed,
+    fontSize: 13,
+    marginBottom: 20,
+    marginHorizontal: 50,
   },
 });
