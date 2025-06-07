@@ -1,5 +1,5 @@
 // const API_URL = 'http://localhost:8080';
-const API_URL = "https://maisagua-api.onrender.com/";
+const API_URL = "https://maisagua-api.onrender.com";
 
 // Função pra tratar erro
 const handleError = async (response) => {
