@@ -34,30 +34,34 @@ export default function Notificacoes() {
     if (!idReservatorio) return;
 
     const carregarTudo = async () => {
-    try {
-    setLoading(true);
-      const leitura = await fetchLeituraDispositivo(token, idReservatorio);
-      const ultimaLeitura = leitura.content?.[leitura.content.length - 1];
-      const pct = ultimaLeitura?.nivelPct ?? 0;
+      try {
+        setLoading(true);
+        const leitura = await fetchLeituraDispositivo(token, idReservatorio);
+        const ultimaLeitura = leitura.content?.[leitura.content.length - 1];
+        const pct = ultimaLeitura?.nivelPct ?? 0;
 
-      const response = await fetchNotificacoes(idReservatorio, pct, pageable.page);
+        const response = await fetchNotificacoes(
+          idReservatorio,
+          pct,
+          pageable.page
+        );
 
-      setNivelPct(pct);
-      setData(response.content);
-      setPageable({
-        last: response.last,
-        first: response.first,
-        page: response.page,
-      });
-    } catch (error) {
-      console.error("Erro ao carregar notificações:", error);
-    } finally {
-      setLoading(false);
-    }
+        setNivelPct(pct);
+        setData(response.content);
+        setPageable({
+          last: response.last,
+          first: response.first,
+          page: response.page,
+        });
+      } catch (error) {
+        console.error("Erro ao carregar notificações:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     carregarTudo();
-    }, [idReservatorio, pageable.page, token]);
+  }, [idReservatorio, pageable.page, token]);
 
   const nextPage = () => {
     if (!pageable.last) {
