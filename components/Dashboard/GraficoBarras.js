@@ -18,7 +18,7 @@ export default function GraficoBarras({ dados }) {
         data={dados}
         barWidth={20}
         height={150}
-        spacing={20}
+        spacing={34}
         noOfSections={4}
         yAxisThickness={0}
         isAnimated

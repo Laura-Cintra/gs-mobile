@@ -1,6 +1,6 @@
 // const API_URL = 'http://localhost:8080';
 const API_URL = "https://maisagua-api.onrender.com";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Função pra tratar erro
 const handleError = async (response) => {
@@ -214,11 +214,11 @@ export async function fetchNotificacoes(idReservatorio, nivelPct, page = 0) {
     setTimeout(() => {
       let mensagem = "";
 
-      if (nivelPct >= 80) {
+      if (nivelPct >= 90) {
         mensagem = "Reservatório está cheio!";
-      } else if (nivelPct >= 50) {
+      } else if (nivelPct >= 70) {
         mensagem = "Nível dentro do normal";
-      } else if (nivelPct >= 30) {
+      } else if (nivelPct >= 40) {
         mensagem = "Reservatório com nível baixo";
       } else if (nivelPct >= 10) {
         mensagem = "Nível crítico, risco de falta de água";
