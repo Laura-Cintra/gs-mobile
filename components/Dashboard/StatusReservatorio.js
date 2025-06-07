@@ -94,5 +94,6 @@ const styles = StyleSheet.create({
   phDescription: {
     fontSize: 10,
     color: colors.placeholder,
+    maxWidth: '90%'
   },
 });

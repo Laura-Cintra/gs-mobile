@@ -428,9 +428,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
     marginLeft: 5,
-    maxWidth: "60%",
+    maxWidth: "42%",
     borderRadius: 10,
-    height: 120,
+    height: 160,
   },
   alertTitle: {
     fontSize: 16,
@@ -438,9 +438,11 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
   alertText: {
+    textAlign: "center",
     fontSize: 12,
     marginTop: 6,
-    maxWidth: "62%",
+    width: "80%",
+    marginHorizontal: "auto",
   },
   loadingContainer: {
     flex: 1,

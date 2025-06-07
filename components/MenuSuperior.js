@@ -16,7 +16,7 @@ export default function MenuSuperior() {
   const { logout } = useUser();
 
   const handleHome = () => {
-    navigation.navigate("MainApp");
+    navigation.navigate("Home");
   };
 
   const handleLogout = async () => {

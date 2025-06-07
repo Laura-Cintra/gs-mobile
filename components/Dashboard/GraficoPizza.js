@@ -43,7 +43,7 @@ export default function GraficoPizza({ dadosStatus }) {
 
 const styles = StyleSheet.create({
   graphBox: {
-    width: "65%",
+    maxWidth: "60%",
     backgroundColor: "#fff",
     borderRadius: 10,
     padding: 10,
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   },
   legendContainer: {
     marginTop: 10,
-    marginLeft: 20,
+    marginLeft: 10,
   },
   legendItem: {
     flexDirection: "row",

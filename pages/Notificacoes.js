@@ -30,16 +30,19 @@ export default function Notificacoes() {
     page: 0,
   });
 
-  const getNotificacoes = async () => {
-    if (!idReservatorio || nivelPct === null) return;
+  useEffect(() => {
+    if (!idReservatorio) return;
 
+    const carregarTudo = async () => {
     try {
-      setLoading(true);
-      const response = await fetchNotificacoes(
-        idReservatorio,
-        nivelPct,
-        pageable.page
-      );
+    setLoading(true);
+      const leitura = await fetchLeituraDispositivo(token, idReservatorio);
+      const ultimaLeitura = leitura.content?.[leitura.content.length - 1];
+      const pct = ultimaLeitura?.nivelPct ?? 0;
+
+      const response = await fetchNotificacoes(idReservatorio, pct, pageable.page);
+
+      setNivelPct(pct);
       setData(response.content);
       setPageable({
         last: response.last,
@@ -47,33 +50,14 @@ export default function Notificacoes() {
         page: response.page,
       });
     } catch (error) {
-      console.error("Erro ao buscar notificações:", error);
+      console.error("Erro ao carregar notificações:", error);
     } finally {
       setLoading(false);
     }
-  };
+    };
 
-  const carregarNivel = async () => {
-    try {
-      const leitura = await fetchLeituraDispositivo(token, idReservatorio);
-      const ultimaLeitura = leitura.content?.[leitura.content.length - 1];
-      setNivelPct(ultimaLeitura?.nivelPct ?? 0);
-    } catch (err) {
-      console.error("Erro ao buscar leitura:", err);
-    }
-  };
-
-  useEffect(() => {
-    if (idReservatorio) {
-      carregarNivel();
-    }
-  }, [idReservatorio]);
-
-  useEffect(() => {
-    if (nivelPct !== null) {
-      getNotificacoes();
-    }
-  }, [pageable.page, nivelPct]);
+    carregarTudo();
+    }, [idReservatorio, pageable.page, token]);
 
   const nextPage = () => {
     if (!pageable.last) {
