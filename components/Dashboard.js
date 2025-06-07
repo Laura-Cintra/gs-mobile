@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'rea
 import { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../theme/colors';
-import { fetchReservatorios, fetchPerfilUsuario, cadastrarReservatorio, fetchHistoricoReservatorio, fetchEndereco, fetchClimaByCidade, fetchLeituraDispositivo } from '../services/actions';
+import { fetchReservatorios, fetchPerfilUsuario, cadastrarReservatorio, fetchHistoricoReservatorio, fetchEndereco, fetchClimaByCidade, fetchLeituraDispositivo, fetchNotificacoes } from '../services/actions';
 import { useUser } from '../providers/UserContext';
 
 import ModalRepositorios from '../components/Dashboard/ModalRepositorios';
@@ -27,6 +27,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [historico, setHistorico] = useState([]);
   const [leituraAtual, setLeituraAtual] = useState(null);
+  const [ultimoAlerta, setUltimoAlerta] = useState(null);
   
   const [modalErrorVisible, setModalErrorVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
@@ -34,18 +35,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     const carregarHistorico = async () => {
-      if (!repoAtual || !repoAtual.idReservatorio) return;
+      if (!repoAtual?.idReservatorio) return;
 
       try {
         const historico = await fetchHistoricoReservatorio(token, repoAtual.idReservatorio);
         const ultimos7 = historico.slice(0, 7).reverse();
-
         const dadosFormatados = ultimos7.map(item => ({
           value: item.nivelLitros,
           label: item.data_hora.split('T')[0].split('-').reverse().join('/'),
           frontColor: colors.primary,
         }));
-
         setHistorico(dadosFormatados);
       } catch (err) {
         console.error('Erro ao carregar histórico:', err);
@@ -108,7 +107,7 @@ export default function Dashboard() {
         const formatado = Object.entries(contagem).map(([nome, qtd]) => ({
           value: qtd,
           color: statusCores[nome] || '#000',
-          text: nome, // Só o nome do status; a porcentagem será calculada no componente de gráfico
+          text: nome,
         }));
 
         setDadosStatus(formatado);
@@ -150,6 +149,23 @@ export default function Dashboard() {
     carregarPerfilEClima();
     carregarLeituraAtual();
   }, [repoAtual, loading]);
+
+  useEffect(() => {
+    const carregarAlertaSimulado = async () => {
+      if (!repoAtual) return;
+
+      const nivel = leituraAtual?.nivelPct ?? 0;
+
+      try {
+        const notificacoes = await fetchNotificacoes(repoAtual.idReservatorio, nivel, 0);
+        setUltimoAlerta(notificacoes.content?.[0] || null);
+      } catch (err) {
+        console.error('Erro ao buscar alerta:', err);
+      }
+    };
+
+    carregarAlertaSimulado();
+  }, [repoAtual, leituraAtual]);
 
   const handleCadastrarReservatorio = async (nome, capacidade) => {
 
@@ -240,7 +256,7 @@ export default function Dashboard() {
             <Icon name="alert" size={26} color="#DC4D34" />
             <Text style={styles.alertTitle}>Alerta:</Text>
           </View>
-          <Text style={styles.alertText}>Nível crítico em algum reservatório</Text>
+          <Text style={styles.alertText}>{ultimoAlerta?.mensagem || 'Nenhum alerta no momento'}</Text>
         </View>
       </View>
 

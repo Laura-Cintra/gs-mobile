@@ -171,3 +171,48 @@ export async function fetchClimaByCidade(nomeCidade) {
     return { chance: 0, description: 'Erro ao buscar clima' };
   }
 }
+
+// Alertas de acordo com o nivelAtual
+export async function fetchNotificacoes(idReservatorio, nivelPct, page = 0) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      let mensagem = '';
+
+      if (nivelPct >= 80) {
+        mensagem = 'Reservatório está cheio.';
+      } else if (nivelPct >= 50) {
+        mensagem = 'Nível dentro do normal.';
+      } else if (nivelPct >= 30) {
+        mensagem = 'Reservatório com nível baixo.';
+      } else if (nivelPct >= 10) {
+        mensagem = 'Nível crítico, risco de falta de água.';
+      } else if (nivelPct > 0) {
+        mensagem = 'Reservatório praticamente vazio!';
+      } else {
+        mensagem = 'Reservatório vazio!';
+      }
+
+      const pageSize = 7;
+      const data = [];
+      const totalPages = Math.ceil(data.length / pageSize);
+      const currentDate = new Date();
+      const formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}/${String(currentDate.getMonth() + 1).padStart(2, '0')}/${String(currentDate.getFullYear()).slice(-2)}`;
+
+      if (page === 0) {
+        data.push({
+          id_alerta: idReservatorio * 100 + page + 1,
+          id_reservatorio: idReservatorio,
+          mensagem,
+          data_alerta: formattedDate
+        });
+      }
+
+      resolve({
+        content: data,
+        page,
+        first: page === 0,
+        last: page === totalPages - 1
+      });
+    }, 600);
+  });
+}

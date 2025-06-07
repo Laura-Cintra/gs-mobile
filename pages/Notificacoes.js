@@ -1,13 +1,19 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
 import NotificacaoItem from '../components/NotificacaoItem';
 import colors from '../theme/colors';
-import { fetchNotificacoes } from '../services/actions';
+import { fetchNotificacoes, fetchLeituraDispositivo } from '../services/actions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MenuSuperior from '../components/MenuSuperior';
+import { useUser } from '../providers/UserContext';
 
 export default function Notificacoes() {
+  const { token, idReservatorio } = useUser();
+
   const [data, setData] = useState([]);
+  const [nivelPct, setNivelPct] = useState(null);
+  const [loading, setLoading] = useState(true);
+
   const [pageable, setPageable] = useState({
     last: false,
     first: false,
@@ -15,8 +21,11 @@ export default function Notificacoes() {
   });
 
   const getNotificacoes = async () => {
+    if (!idReservatorio || nivelPct === null) return;
+
     try {
-      const response = await fetchNotificacoes(pageable.page);
+      setLoading(true);
+      const response = await fetchNotificacoes(idReservatorio, nivelPct, pageable.page);
       setData(response.content);
       setPageable({
         last: response.last,
@@ -25,12 +34,32 @@ export default function Notificacoes() {
       });
     } catch (error) {
       console.error('Erro ao buscar notificações:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const carregarNivel = async () => {
+    try {
+      const leitura = await fetchLeituraDispositivo(token, idReservatorio);
+      const ultimaLeitura = leitura.content?.[leitura.content.length - 1];
+      setNivelPct(ultimaLeitura?.nivelPct ?? 0);
+    } catch (err) {
+      console.error('Erro ao buscar leitura:', err);
     }
   };
 
   useEffect(() => {
-    getNotificacoes();
-  }, [pageable.page]);
+    if (idReservatorio) {
+      carregarNivel();
+    }
+  }, [idReservatorio]);
+
+  useEffect(() => {
+    if (nivelPct !== null) {
+      getNotificacoes();
+    }
+  }, [pageable.page, nivelPct]);
 
   const nextPage = () => {
     if (!pageable.last) {
@@ -52,44 +81,48 @@ export default function Notificacoes() {
 
   return (
     <ScrollView>
-    <MenuSuperior/>
-    <View style={styles.container}>
-      <Text style={styles.title}>Histórico</Text>
+      <MenuSuperior />
+      <View style={styles.container}>
+        <Text style={styles.title}>Histórico</Text>
 
-      <View style={styles.lista}>
-        {data.length > 0 ? (
-          data.map((item) => (
-            <NotificacaoItem
-              key={item.id_alerta}
-              data={item.data_alerta}
-              mensagem={item.mensagem}
-            />
-          ))
+        {loading ? (
+          <ActivityIndicator size="large" color={colors.primary} />
         ) : (
-          <Text style={styles.mensagemNull}>Nenhuma notificação encontrada.</Text>
+          <View style={styles.lista}>
+            {data.length > 0 ? (
+              data.map((item) => (
+                <NotificacaoItem
+                  key={item.id_alerta}
+                  data={item.data_alerta}
+                  mensagem={item.mensagem}
+                />
+              ))
+            ) : (
+              <Text style={styles.mensagemNull}>Nenhuma notificação encontrada.</Text>
+            )}
+          </View>
         )}
-      </View>
-        
-      <View style={styles.paginacao}>
-        <TouchableOpacity
-          style={[styles.setaAtiva, pageable.first && styles.setaInativa]}
-          onPress={!pageable.first ? previousPage : undefined}
-        >
-          <Icon name="chevron-left" size={24} color={colors.white} />
-        </TouchableOpacity>
 
-        <View style={styles.numPagina}>
-          <Text>{pageable.page + 1}</Text>
+        <View style={styles.paginacao}>
+          <TouchableOpacity
+            style={[styles.setaAtiva, pageable.first && styles.setaInativa]}
+            onPress={!pageable.first ? previousPage : undefined}
+          >
+            <Icon name="chevron-left" size={24} color={colors.white} />
+          </TouchableOpacity>
+
+          <View style={styles.numPagina}>
+            <Text>{pageable.page + 1}</Text>
+          </View>
+
+          <TouchableOpacity
+            style={[styles.setaAtiva, pageable.last && styles.setaInativa]}
+            onPress={!pageable.last ? nextPage : undefined}
+          >
+            <Icon name="chevron-right" size={24} color={colors.white} />
+          </TouchableOpacity>
         </View>
-
-        <TouchableOpacity
-          style={[styles.setaAtiva, pageable.last && styles.setaInativa]}
-          onPress={!pageable.last ? nextPage : undefined}
-        >
-          <Icon name="chevron-right" size={24} color={colors.white} />
-        </TouchableOpacity>
       </View>
-    </View>
     </ScrollView>
   );
 }
