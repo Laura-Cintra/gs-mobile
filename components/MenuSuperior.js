@@ -3,19 +3,18 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
 import logo from '../assets/logo-agua.png';
 import colors from '../theme/colors';
-// import { useAuth } from '../context/AuthContext';
+import { useUser } from '../providers/UserContext';
 
 export default function MenuSuperior() {
   const navigation = useNavigation();
-  // const { logout } = useAuth();
+  const { logout } = useUser();
 
   const handleHome = () => {
-    navigation.navigate('Home');
+    navigation.navigate('MainApp');
   };
 
   const handleLogout = async () => {
-    // await logout();
-    navigation.navigate('Login');
+    await logout();
   };
 
   return (
@@ -39,7 +38,6 @@ export default function MenuSuperior() {
 
 const styles = StyleSheet.create({
   header: {
-    marginTop: 25,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

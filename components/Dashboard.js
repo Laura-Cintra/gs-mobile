@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../theme/colors';
-import { fetchRepositorios, fetchClima } from '../services/actions';
+import { fetchReservatorios, fetchPerfilUsuario, cadastrarReservatorio, fetchHistoricoReservatorio, fetchEndereco, fetchClimaByCidade, fetchLeituraDispositivo } from '../services/actions';
+import { useUser } from '../providers/UserContext';
 
 import ModalRepositorios from '../components/Dashboard/ModalRepositorios';
 import GraficoBarras from '../components/Dashboard/GraficoBarras';
@@ -10,66 +11,216 @@ import GraficoPizza from '../components/Dashboard/GraficoPizza';
 import CadastroReservatorio from '../components/CadastroReservatorio';
 import ChuvaContainer from '../components/Dashboard/ChuvaContainer';
 import StatusReservatorio from './Dashboard/StatusReservatorio';
+import Button from './Formulario/Button';
+import MessageModal from './MessageModal';
 
 export default function Dashboard() {
-  const [repositorios, setRepositorios] = useState([]);
+  const { token, idUnidade, idReservatorio, saveIdReservatorio } = useUser();
+
+  const [reservatorios, setReservatorios] = useState([]);
   const [repoAtual, setRepoAtual] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [clima, setClima] = useState(null);
-  const [dadosStatus, setDadosStatus] = useState([]);
   const [modalCadastroVisible, setModalCadastroVisible] = useState(false);
+  const [clima, setClima] = useState(null);
+  const [perfil, setPerfil] = useState(null);
+  const [dadosStatus, setDadosStatus] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [historico, setHistorico] = useState([]);
+  const [leituraAtual, setLeituraAtual] = useState(null);
+  
+  const [modalErrorVisible, setModalErrorVisible] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalIsSuccess, setModalIsSuccess] = useState(false);
 
   useEffect(() => {
-    const carregarDados = async () => {
-      const repos = await fetchRepositorios();
-      setRepositorios(repos);
-      setRepoAtual(repos[0]);
-      const statusDistribuido = distribuirStatus(repos);
-      setDadosStatus(statusDistribuido);
+    const carregarHistorico = async () => {
+      if (!repoAtual || !repoAtual.idReservatorio) return;
+
+      try {
+        const historico = await fetchHistoricoReservatorio(token, repoAtual.idReservatorio);
+        const ultimos7 = historico.slice(0, 7).reverse();
+
+        const dadosFormatados = ultimos7.map(item => ({
+          value: item.nivelLitros,
+          label: item.data_hora.split('T')[0].split('-').reverse().join('/'),
+          frontColor: colors.primary,
+        }));
+
+        setHistorico(dadosFormatados);
+      } catch (err) {
+        console.error('Erro ao carregar histórico:', err);
+      }
     };
 
-    const carregarClima = async () => {
-      const climaData = await fetchClima();
-      setClima(climaData);
+    carregarHistorico();
+  }, [repoAtual]);
+
+  useEffect(() => {
+    const carregarReservatorios = async () => {
+      try {
+        const lista = await fetchReservatorios(token);
+        setReservatorios(lista);
+
+        const atual = lista.find(r => r.idReservatorio === idReservatorio) || lista[0];
+        setRepoAtual(atual);
+
+        if (atual && (!idReservatorio || idReservatorio !== atual.idReservatorio)) {
+          await saveIdReservatorio(atual.idReservatorio);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar reservatórios:', error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    carregarDados();
-    carregarClima();
-  }, []);
+    if (token && loading) carregarReservatorios();
+  }, [token, loading]);
 
-  const distribuirStatus = (repos) => {
-    const contagem = { Cheio: 2, Normal: 5, Vazio: 1 };
-    repos.forEach(repo => {
-      contagem[repo.status] += 1;
-    });
-    return [
-      { value: contagem.Cheio, color: '#4CAF50', text: 'Cheio' },
-      { value: contagem.Normal, color: '#FFC107', text: 'Normal' },
-      { value: contagem.Vazio, color: '#F44336', text: 'Vazio' },
-    ];
+  useEffect(() => {
+    if (loading || !repoAtual) return;
+
+    const carregarDistribuicaoStatus = async () => {
+      try {
+        const historico = await fetchHistoricoReservatorio(token, repoAtual.idReservatorio);
+
+        const statusCores = {
+          Cheio: '#4CAF50',
+          Normal: '#FFC107',
+          Baixo: '#2196F3',
+          Crítico: '#F44336',
+          Esvaziado: '#9E9E9E',
+        };
+
+        const contagem = {};
+
+        historico.forEach(({ status }) => {
+          const nome = status?.status;
+          if (nome) contagem[nome] = (contagem[nome] || 0) + 1;
+        });
+
+        const total = Object.values(contagem).reduce((acc, val) => acc + val, 0);
+        if (total === 0) {
+          setDadosStatus([]);
+          return;
+        }
+
+        const formatado = Object.entries(contagem).map(([nome, qtd]) => ({
+          value: qtd,
+          color: statusCores[nome] || '#000',
+          text: nome, // Só o nome do status; a porcentagem será calculada no componente de gráfico
+        }));
+
+        setDadosStatus(formatado);
+      } catch (err) {
+        console.error('Erro ao carregar status do gráfico de pizza:', err);
+      }
+    };
+    const carregarPerfilEClima = async () => {
+      try {
+        const perfilData = await fetchPerfilUsuario(token, repoAtual.idReservatorio);
+        setPerfil(perfilData);
+
+        const enderecoData = await fetchEndereco(token);
+        const cidade = enderecoData?.cidade;
+
+        if (cidade) {
+          const climaData = await fetchClimaByCidade(cidade);
+          setClima(climaData);
+        } else {
+          setClima({ chance: 0, description: 'Cidade não cadastrada' });
+        }
+      } catch (err) {
+        console.error('Erro ao carregar perfil/clima:', err);
+        setClima({ chance: 0, description: 'Erro ao carregar dados' });
+      }
+    };
+
+    const carregarLeituraAtual = async () => {
+    try {
+      const leitura = await fetchLeituraDispositivo(token, repoAtual.idReservatorio);
+      const ultimaLeitura = leitura.content[leitura.content.length - 1];
+      setLeituraAtual(ultimaLeitura);
+    } catch (err) {
+      console.error('Erro ao carregar leitura atual:', err);
+    }
   };
 
-  if (!repoAtual) return null;
+    carregarDistribuicaoStatus();
+    carregarPerfilEClima();
+    carregarLeituraAtual();
+  }, [repoAtual, loading]);
+
+  const handleCadastrarReservatorio = async (nome, capacidade) => {
+
+    if (!nome || !capacidade || !idUnidade) {
+      console.warn('Campos obrigatórios ausentes');
+      return;
+    }
+
+    try {
+      const data = {
+        nome,
+        capacidadeTotalLitros: Number(capacidade),
+        unidade: {
+          idUnidade: Number(idUnidade),
+        },
+      };
+
+      const response = await cadastrarReservatorio(token, data);
+      await saveIdReservatorio(response.idReservatorio);
+      setModalCadastroVisible(false);
+      setRepoAtual(null);
+      setLoading(true);
+    } catch (error) {
+      console.error('Erro ao cadastrar reservatório:', error);
+      setModalMessage(error.message);
+      setModalIsSuccess(false);
+      setModalErrorVisible(true);
+    }
+  };
 
   const handleTrocarRepo = (repo) => {
+    saveIdReservatorio(repo.idReservatorio);
     setRepoAtual(repo);
     setModalVisible(false);
   };
 
-  const atualizarRepositorios = async () => {
-    const repos = await fetchRepositorios();
-    setRepositorios(repos);
-    setRepoAtual(repos[0]);
-    const statusDistribuido = distribuirStatus(repos);
-    setDadosStatus(statusDistribuido);
-  };
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
+
+  if (!repoAtual) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Dashboard</Text>
+        <View style={styles.centeredButton}>
+          <Button
+            title="Adicionar Reservatório"
+            onPress={() => setModalCadastroVisible(true)}
+            backgroundColor={colors.primary}
+          />
+        </View>
+
+        <CadastroReservatorio
+          visible={modalCadastroVisible}
+          onClose={() => setModalCadastroVisible(false)}
+          onCadastroSucesso={(nome, capacidade) => handleCadastrarReservatorio(nome, capacidade)}
+        />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Dashboard</Text>
 
       <View style={styles.repoHeader}>
-        <Text style={styles.repoName}>{repoAtual.nome}</Text>
+        <Text style={styles.repoName}>{repoAtual.nomeReservatorio}</Text>
         <TouchableOpacity onPress={() => setModalVisible(true)}>
           <Icon name="swap-horizontal" size={24} color={colors.primary} />
         </TouchableOpacity>
@@ -78,9 +229,8 @@ export default function Dashboard() {
         </TouchableOpacity>
       </View>
 
-      <StatusReservatorio repoAtual={repoAtual} />
-
-      <GraficoBarras repoAtual={repoAtual} />
+      <StatusReservatorio leitura={leituraAtual} />
+      <GraficoBarras dados={historico} />
 
       <View style={styles.graphRow}>
         <GraficoPizza dadosStatus={dadosStatus} />
@@ -88,9 +238,9 @@ export default function Dashboard() {
         <View style={styles.alertContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Icon name="alert" size={26} color="#DC4D34" />
-            <Text style={styles.alertTitle}>Alerta: </Text>
+            <Text style={styles.alertTitle}>Alerta:</Text>
           </View>
-          <Text style={styles.alertText}>Teste muito muito grande aaaaaaaaaaa</Text>
+          <Text style={styles.alertText}>Nível crítico em algum reservatório</Text>
         </View>
       </View>
 
@@ -100,7 +250,7 @@ export default function Dashboard() {
 
       <ModalRepositorios
         modalVisible={modalVisible}
-        repositorios={repositorios}
+        repositorios={reservatorios}
         repoAtual={repoAtual}
         handleTrocarRepo={handleTrocarRepo}
         setModalVisible={setModalVisible}
@@ -109,7 +259,14 @@ export default function Dashboard() {
       <CadastroReservatorio
         visible={modalCadastroVisible}
         onClose={() => setModalCadastroVisible(false)}
-        onCadastroSucesso={atualizarRepositorios}
+        onCadastroSucesso={handleCadastrarReservatorio}
+      />
+
+      <MessageModal
+        visible={modalErrorVisible}
+        message={modalMessage}
+        isSuccess={modalIsSuccess}
+        onClose={() => setModalErrorVisible(false)}
       />
     </View>
   );
@@ -119,27 +276,27 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     flex: 1,
-    backgroundColor: colors.background
+    backgroundColor: colors.background,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    marginBottom: 10
+    marginBottom: 10,
   },
   repoHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    marginBottom: 20
+    marginBottom: 20,
   },
   repoName: {
     fontSize: 18,
-    fontWeight: '600'
+    fontWeight: '600',
   },
   graphRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20
+    marginBottom: 20,
   },
   alertContainer: {
     justifyContent: 'center',
@@ -159,5 +316,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 6,
     maxWidth: '62%',
-  }
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background,
+  },
+  centeredButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

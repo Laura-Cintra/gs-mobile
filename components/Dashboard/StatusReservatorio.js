@@ -2,7 +2,30 @@ import { View, Text, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../theme/colors';
 
-export default function StatusReservatorio({ repoAtual }) {
+export default function StatusReservatorio({ leitura }) {
+  const nivel = leitura?.nivelPct ?? 0;
+  const ph = leitura?.phInt ?? 0;
+
+  let statusPh = 'Desconhecido';
+  let descPH = 'Valor inválido';
+
+  if (ph >= 0 && ph < 5.5) {
+    statusPh = 'Baixo';
+    descPH = 'Água muito ácida';
+  } else if (ph >= 5.5 && ph < 6.5) {
+    statusPh = 'Ácido';
+    descPH = 'Ligeiramente ácido';
+  } else if (ph >= 6.5 && ph <= 7.5) {
+    statusPh = 'Neutro';
+    descPH = 'pH ideal';
+  } else if (ph > 7.5 && ph <= 8.5) {
+    statusPh = 'Alcalino';
+    descPH = 'Ligeiramente alcalino';
+  } else if (ph > 8.5 && ph <= 14) {
+    statusPh = 'Alto';
+    descPH = 'Água muito alcalina';
+  }
+
   return (
     <View style={styles.statusContainer}>
       <View style={styles.statusBox}>
@@ -11,7 +34,7 @@ export default function StatusReservatorio({ repoAtual }) {
         </View>
         <View>
           <Text style={styles.statusLabel}>Nível atual</Text>
-          <Text style={styles.statusValue}>{repoAtual.nivelAtual} L</Text>
+          <Text style={styles.statusValue}>{nivel} %</Text>
         </View>
       </View>
 
@@ -19,13 +42,13 @@ export default function StatusReservatorio({ repoAtual }) {
         <View>
           <Icon name="water" size={75} color="#72DBCF" />
           <View style={styles.phContainer}>
-            <Text style={styles.statusPh}>{repoAtual.ph}</Text>
+            <Text style={styles.statusPh}>{ph.toFixed(1)}</Text>
           </View>
         </View>
         <View>
           <Text style={styles.statusLabel}>Status Ph:</Text>
-          <Text style={styles.statusValue}>{repoAtual.statusPh}</Text>
-          <Text style={styles.phDescription}>{repoAtual.descPH}</Text>
+          <Text style={styles.statusValue}>{statusPh}</Text>
+          <Text style={styles.phDescription}>{descPH}</Text>
         </View>
       </View>
     </View>

@@ -18,27 +18,27 @@ export default function ModalRepositorios({
           </TouchableOpacity>
 
           <Text style={styles.modalTitle}>
-            Escolha o repositório que deseja ver o relatório:
+            Escolha o reservatório que deseja ver o relatório:
           </Text>
 
           {repositorios.map((repo) => (
             <Pressable
-              key={repo.id}
+              key={repo.idReservatorio}
               onPress={() => handleTrocarRepo(repo)}
               style={[
                 styles.modalItem,
-                repo.id === repoAtual.id && styles.modalItemSelected
+                repo.idReservatorio === repoAtual?.idReservatorio && styles.modalItemSelected
               ]}
             >
               <Text
                 style={[
                   styles.modalItemText,
-                  repo.id === repoAtual.id && styles.modalItemTextSelected
+                  repo.idReservatorio === repoAtual?.idReservatorio && styles.modalItemTextSelected
                 ]}
               >
-                {repo.nome}
+                {repo.nomeReservatorio}
               </Text>
-              {repo.id === repoAtual.id && (
+              {repo.idReservatorio === repoAtual?.idReservatorio && (
                 <Icon name="check" size={16} color={colors.white} />
               )}
             </Pressable>

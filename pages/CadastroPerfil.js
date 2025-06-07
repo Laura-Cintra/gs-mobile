@@ -27,6 +27,13 @@ export default function CadastroPerfil() {
       return;
     }
 
+    if (senha.length < 5) {
+      setModalMessage('A senha deve ter no mínimo 5 caracteres.');
+      setModalIsSuccess(false);
+      setModalVisible(true);
+      return;
+    }
+
     navigation.navigate('CadastroUnidade', { perfil: { nome, email, senha } });
   };
 

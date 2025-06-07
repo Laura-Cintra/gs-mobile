@@ -4,6 +4,7 @@ import NotificacaoItem from '../components/NotificacaoItem';
 import colors from '../theme/colors';
 import { fetchNotificacoes } from '../services/actions';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MenuSuperior from '../components/MenuSuperior';
 
 export default function Notificacoes() {
   const [data, setData] = useState([]);
@@ -51,6 +52,7 @@ export default function Notificacoes() {
 
   return (
     <ScrollView>
+    <MenuSuperior/>
     <View style={styles.container}>
       <Text style={styles.title}>Histórico</Text>
 

@@ -1,25 +1,16 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
-import colors from '../../theme/colors';
 
-export default function GraficoBarras({ repoAtual }) {
-  const dadosGrafico = repoAtual.historico.map((dia) => ({
-    value: dia.nivel,
-    label: dia.dia,
-    frontColor: colors.primary,
-    topLabelComponent: () => (
-      <Text style={{ color: colors.textSecondary, fontSize: 10 }}>
-        {dia.nivel}
-      </Text>
-    )
-  }));
+export default function GraficoBarras({ dados }) {
+
+  if (!Array.isArray(dados)) return null;
 
   return (
     <View style={styles.card}>
       <Text style={styles.cardTitle}>Nível do reservatório</Text>
       <Text style={styles.subTitle}>Últimos 7 dias</Text>
       <BarChart
-        data={dadosGrafico}
+        data={dados}
         barWidth={20}
         height={150}
         spacing={20}

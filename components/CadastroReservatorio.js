@@ -5,24 +5,26 @@ import InputText from './Formulario/InputText';
 import Button from './Formulario/Button';
 import colors from '../theme/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-// import { useAuth } from '../context/AuthContext';
+import MessageModal from './MessageModal';
 
 export default function CadastroReservatorio({ visible, onClose, onCadastroSucesso }) {
   const [nome, setNome] = useState('');
   const [capacidade, setCapacidade] = useState('');
-  // const { userData } = useAuth();
+  const [messageVisible, setMessageVisible] = useState(false);
+  const [messageText, setMessageText] = useState('');
+  const [messageSuccess, setMessageSuccess] = useState(false);
 
   const handleCadastrar = () => {
-    console.log('Reservatório cadastrado');
-    onCadastroSucesso();
-    
-    // console.log('Reservatório cadastrado:', {
-    //   nome,
-    //   capacidade: Number(capacidade),
-    //   unidade_id: userData.id_unidade,
-    // });
-    // // lógica de POST virá depois
-    // onClose();
+  if (!nome || !capacidade) {
+    setMessageText('Por favor, preencha todos os campos obrigatórios.');
+    setMessageSuccess(false);
+    setMessageVisible(true);
+    return;
+  }
+
+    onCadastroSucesso(nome, capacidade);
+    handleLimpar();
+    onClose();
   };
 
   const handleLimpar = () => {
@@ -75,6 +77,12 @@ export default function CadastroReservatorio({ visible, onClose, onCadastroSuces
             />
           </View>
         </View>
+        <MessageModal
+          visible={messageVisible}
+          message={messageText}
+          isSuccess={messageSuccess}
+          onClose={() => setMessageVisible(false)}
+        />
       </View>
     </Modal>
   );

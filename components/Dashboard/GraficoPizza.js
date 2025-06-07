@@ -2,6 +2,12 @@ import { View, Text, StyleSheet } from 'react-native';
 import { PieChart } from 'react-native-gifted-charts';
 
 export default function GraficoPizza({ dadosStatus }) {
+  if (!Array.isArray(dadosStatus) || dadosStatus.length === 0) {
+    return null;
+  }
+
+  const total = dadosStatus.reduce((sum, item) => sum + item.value, 0);
+
   return (
     <View style={styles.graphBox}>
       <Text style={styles.subTitle}>Distribuição de Status</Text>
@@ -10,13 +16,13 @@ export default function GraficoPizza({ dadosStatus }) {
           data={dadosStatus.map(item => ({
             value: item.value,
             color: item.color,
-            text: `${item.value}%`,
+            text: `${Math.round((item.value / total) * 100)}%`,
           }))}
           showText
           textColor="#000"
           radius={60}
           innerRadius={0}
-          textSize={14}
+          textSize={20}
           isAnimated
         />
 

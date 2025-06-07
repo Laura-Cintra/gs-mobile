@@ -17,7 +17,7 @@ export default function CadastroUnidade({ navigation, route }) {
   const [modalIsSuccess, setModalIsSuccess] = useState(false);
 
   const handleNext = () => {
-    if (!nome || !capacidade || !apartamentos) {
+    if (!nome || !capacidade) {
       setModalMessage('Todos os campos devem ser preenchidos.');
       setModalIsSuccess(false);
       setModalVisible(true);
@@ -40,7 +40,7 @@ export default function CadastroUnidade({ navigation, route }) {
         </View>
 
         <InputText label="Nome" placeholder="Insira o nome do seu prédio" value={nome} onChangeText={setNome} />
-        <InputText label="Capacidade da Unidade (mL)" placeholder="Ex.: 10000" value={capacidade} onChangeText={setCapacidade} keyboardType="numeric" />
+        <InputText label="Capacidade da Unidade (L)" placeholder="Ex.: 10000" value={capacidade} onChangeText={setCapacidade} keyboardType="numeric" />
 
         <View style={styles.button}>
           <Button title="Limpar" backgroundColor={colors.lightSecondary} onPress={() => { setNome(''); setCapacidade(''); setApartamentos(''); }} />

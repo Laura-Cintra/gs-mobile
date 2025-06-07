@@ -1,64 +1,160 @@
-const API_URL = 'http://localhost:8080/';
+const API_URL = 'http://localhost:8080';
 
-// export async function fetchNotificacoes(page = 0) {
-//   try {
-//     const response = await fetch(`${API_URL}/notificacoes?page=${page}`);
-//     return await response.json();
-//   } catch (error) {
-//     console.error('Erro ao buscar notificações:', error);
-//     throw error;
-//   }
-// }
+// Função utilitária para tratar erros de fetch
+const handleError = async (response) => {
+  if (!response.ok) {
+    let errorMessage = 'Erro na requisição';
 
-// export async function limparHistorico() {
-//   try {
-//     const response = await fetch(`${API_URL}/notificacoes`, {
-//       method: 'DELETE'
-//     });
-//     return await response.json();
-//   } catch (error) {
-//     console.error('Erro ao limpar histórico:', error);
-//     throw error;
-//   }
-// }
-
-// Simulação gpt
-
-export async function fetchNotificacoes(page = 0) {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const fakeData = [];
-
-      const totalPages = 3;
-      const pageSize = 7;
-
-      for (let i = 0; i < pageSize; i++) {
-        const index = page * pageSize + i + 1;
-        fakeData.push({
-          id_alerta: index,
-          mensagem: `Alerta simulado nº ${index}`,
-          data_alerta: '29/05/2025'
-        });
+    try {
+      const errorBody = await response.json();
+      if (errorBody?.message) {
+        errorMessage = errorBody.message;
       }
+    } catch (_) {
+      // Fallback para erro genérico se não conseguir parsear o JSON
+    }
 
-      resolve({
-        content: fakeData,
-        page: page,
-        first: page === 0,
-        last: page === totalPages - 1
-      });
-    }, 800); // Delay simulado
+    const error = new Error(errorMessage);
+    error.status = response.status;
+    throw error;
+  }
+
+  return response.json();
+};
+
+// Login
+export async function login(data) {
+  const response = await fetch(`${API_URL}/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
   });
+  const json = await handleError(response);
+  return json.token;
 }
 
+// Cadastro
+export async function cadastroCompleto(data) {
+  const response = await fetch(`${API_URL}/cadastro-completo`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+  return handleError(response);
+}
 
-// Dashboard
+// Unidades do usuário
+export async function fetchUnidades(token) {
+  const response = await fetch(`${API_URL}/unidade`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return handleError(response);
+}
+
+// Reservatórios do usuário
+export async function fetchReservatorios(token) {
+  const response = await fetch(`${API_URL}/reservatorio`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return handleError(response);
+}
+
+// Cadastrar reservatório
+export async function cadastrarReservatorio(token, data) {
+  const response = await fetch(`${API_URL}/reservatorio`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(data)
+  });
+
+  return handleError(response);
+};
+
+// Leitura atual do dispositivo
+export async function fetchLeituraDispositivo(token, idReservatorio) {
+  const response = await fetch(`${API_URL}/leitura-dispositivo?idReservatorio=${idReservatorio}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return handleError(response);
+}
+
+// Perfil
+export async function fetchPerfilUsuario(token, idReservatorio) {
+  const response = await fetch(`${API_URL}/perfil/${idReservatorio}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return handleError(response);
+}
+
+// Cidades
+export async function fetchCidades() {
+ const response = await fetch(`${API_URL}/cidades`);
+  return handleError(response);
+}
+
+// Histórico
+export async function fetchHistoricoReservatorio(token, idReservatorio) {
+  const response = await fetch(
+    `${API_URL}/historico-reservatorio?idReservatorio=${idReservatorio}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    }
+  );
+
+  return handleError(response);
+}
+
+// Endereço do usuário
+export async function fetchEndereco(token) {
+  const response = await fetch(`${API_URL}/endereco`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await handleError(response);
+  return data?.[0]; // pega o primeiro endereço
+}
+
+// Clima - Openweather
+export const cidadesCoordenadas = {
+  'São Paulo': { lat: -23.55052, lon: -46.633308 },
+  'Campinas': { lat: -22.90556, lon: -47.06083 },
+  'Belo Horizonte': { lat: -19.9167, lon: -43.9345 },
+  'Curitiba': { lat: -25.4284, lon: -49.2733 },
+  'Salvador': { lat: -12.9714, lon: -38.5014 },
+};
 
 const OPENWEATHER_API_KEY = 'b98e0c72b55b311214a69b3bcb6fba6a';
 const OPENWEATHER_URL = 'https://api.openweathermap.org/data/2.5/forecast';
 
-export async function fetchClima(lat = -23.55052, lon = -46.633308) {
+export async function fetchClimaByCidade(nomeCidade) {
   try {
+    const cidade = cidadesCoordenadas[nomeCidade];
+    if (!cidade) throw new Error('Cidade não cadastrada no mapa local');
+
+    const { lat, lon } = cidade;
+
     const response = await fetch(
       `${OPENWEATHER_URL}?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric&lang=pt_br`
     );
@@ -66,7 +162,6 @@ export async function fetchClima(lat = -23.55052, lon = -46.633308) {
     const data = await response.json();
 
     const nextForecast = data.list[0];
-
     const chance = nextForecast.pop ? Math.round(nextForecast.pop * 100) : 0;
     const description = nextForecast.weather?.[0]?.description || 'Não disponível';
 
@@ -76,97 +171,3 @@ export async function fetchClima(lat = -23.55052, lon = -46.633308) {
     return { chance: 0, description: 'Erro ao buscar clima' };
   }
 }
-
-// simulando
-export async function fetchRepositorios() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve([
-        {
-          id: 1,
-          nome: 'Repositório principal',
-          nivelAtual: 750,
-          ph: 6.1,
-          statusPh: 'Baixo',
-          descPH: 'Levemente ácido',
-          historico: [
-            { dia: 'Dom', nivel: 300 },
-            { dia: 'Seg', nivel: 400 },
-            { dia: 'Ter', nivel: 500 },
-            { dia: 'Qua', nivel: 600 },
-            { dia: 'Qui', nivel: 700 },
-            { dia: 'Sex', nivel: 800 },
-            { dia: 'Sáb', nivel: 900 }
-          ]
-        },
-        {
-          id: 2,
-          nome: 'Repositório secundário',
-          nivelAtual: 500,
-          ph: 7.0,
-          statusPh: 'Baixo',
-          descPH: 'Neutro',
-          historico: [
-            { dia: 'Dom', nivel: 200 },
-            { dia: 'Seg', nivel: 250 },
-            { dia: 'Ter', nivel: 300 },
-            { dia: 'Qua', nivel: 350 },
-            { dia: 'Qui', nivel: 400 },
-            { dia: 'Sex', nivel: 450 },
-            { dia: 'Sáb', nivel: 500 }
-          ]
-        }
-      ]);
-    }, 500); // simula delay
-  });
-}
-
-// const BASE_URL = 'https://seu-backend.com/api';
-
-// export async function fetchRepositorios() {
-//   try {
-//     const response = await fetch(`${BASE_URL}/repositorios`);
-//     const data = await response.json();
-//     return data;
-//   } catch (error) {
-//     console.error('Erro ao buscar repositórios:', error);
-//     return [];
-//   }
-// }
-
-// const OPENWEATHER_API_KEY = 'b98e0c72b55b311214a69b3bcb6fba6a';
-
-// const GEO_URL = 'https://api.openweathermap.org/geo/1.0/direct';
-// const FORECAST_URL = 'https://api.openweathermap.org/data/2.5/forecast';
-
-// export async function fetchChuvaPorCidade(cityName = 'São Paulo') {
-//   try {
-//     // Passo 1: Obter lat/lon com base no nome da cidade
-//     const geoResponse = await fetch(
-//       `${GEO_URL}?q=${encodeURIComponent(cityName)}&limit=1&appid=${OPENWEATHER_API_KEY}`
-//     );
-//     const geoData = await geoResponse.json();
-
-//     if (!geoData.length) {
-//       throw new Error('Cidade não encontrada');
-//     }
-
-//     const { lat, lon } = geoData[0];
-
-//     // Passo 2: Obter previsão com base em lat/lon
-//     const forecastResponse = await fetch(
-//       `${FORECAST_URL}?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric`
-//     );
-//     const forecastData = await forecastResponse.json();
-
-//     // Previsão mais próxima (próximas 3h)
-//     const nextForecast = forecastData.list[0];
-//     const chance = nextForecast.pop ? Math.round(nextForecast.pop * 100) : 0;
-
-//     return { chance };
-//   } catch (error) {
-//     console.error('Erro ao buscar previsão de chuva por cidade:', error);
-//     return { chance: 0 };
-//   }
-// }
-
