@@ -4,10 +4,16 @@ import { BarChart } from "react-native-gifted-charts";
 export default function GraficoBarras({ dados }) {
   if (!Array.isArray(dados)) return null;
 
+  const estaVazio = dados.length === 0 || dados.every((dado) => dado.value === 0 || dado.value === null);
+
   return (
     <View style={styles.card}>
       <Text style={styles.cardTitle}>Nível do reservatório</Text>
       <Text style={styles.subTitle}>Últimos 7 dias</Text>
+      {estaVazio ? (
+        <Text style={styles.semRegistros}>Sem registros de nível</Text>
+      ) : (
+
       <BarChart
         data={dados}
         barWidth={20}
@@ -18,8 +24,9 @@ export default function GraficoBarras({ dados }) {
         isAnimated
         barBorderRadius={4}
       />
+      )}
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
@@ -39,5 +46,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
     marginBottom: 10,
+  },
+  semRegistros: {
+    textAlign: "center",
+    color: "#888",
+    fontSize: 14,
+    marginVertical: 30,
   },
 });

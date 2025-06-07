@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff",
     marginLeft: 5,
-    maxWidth: "42%",
+    width: "42%",
     borderRadius: 10,
     height: 160,
   },

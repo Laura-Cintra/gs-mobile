@@ -2,11 +2,17 @@ import { View, Text, StyleSheet } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
 
 export default function GraficoPizza({ dadosStatus }) {
-  if (!Array.isArray(dadosStatus) || dadosStatus.length === 0) {
-    return null;
-  }
+  if (!Array.isArray(dadosStatus)) return null;
 
   const total = dadosStatus.reduce((sum, item) => sum + item.value, 0);
+  if (dadosStatus.length === 0 || total === 0) {
+    return (
+    <View style={styles.graphBox}>
+    <Text style={styles.subTitle}>Distribuição de Status</Text>
+    <Text style={styles.semRegistros}>Sem registros de status</Text>
+    </View>
+    );
+    }
 
   return (
     <View style={styles.graphBox}>
@@ -67,5 +73,12 @@ const styles = StyleSheet.create({
     height: 14,
     borderRadius: 3,
     marginRight: 8,
+  },
+  semRegistros: {
+    textAlign: "center",
+    color: "#888",
+    fontSize: 14,
+    marginVertical: 30,
+    marginHorizontal: 20,
   },
 });
