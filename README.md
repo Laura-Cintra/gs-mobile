@@ -36,6 +36,9 @@ Além de sua função social e ambiental, promove a segurança hídrica e otimiz
 
 - Ícone para trocar o repositório atual
 - Ícone para cadastrar novo reservatório
+- Ícone para editar o repositório atual
+- Ícone para excluir o repositório atual
+
 - Visualização do nível atual do reservatório.
 - Exibição do status do pH com interpretação.
 - Gráfico de barras: Evolução do nível nos últimos 7 dias.
