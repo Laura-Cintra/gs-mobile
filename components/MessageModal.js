@@ -1,7 +1,7 @@
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import colors from "../theme/colors";
 
-export default function MessageModal({ visible, message, isSuccess, onClose }) {
+export default function MessageModal({ visible, message, isSuccess, onClose, onConfirm }) {
   return (
     <Modal
       animationType="fade"
@@ -17,9 +17,27 @@ export default function MessageModal({ visible, message, isSuccess, onClose }) {
           ]}
         >
           <Text style={styles.modalText}>{message}</Text>
+          {onConfirm ? (
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={[styles.modalButton, styles.cancelButton]}
+              onPress={onClose}
+            >
+              <Text style={styles.modalButtonText}>Cancelar</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.modalButton, styles.confirmButton]}
+              onPress={onConfirm}
+            >
+              <Text style={[styles.modalButtonText, { color: colors.white }]}>Confirmar</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
           <TouchableOpacity style={styles.modalButton} onPress={onClose}>
             <Text style={styles.modalButtonText}>OK</Text>
           </TouchableOpacity>
+        )}
         </View>
       </View>
     </Modal>
@@ -62,5 +80,22 @@ const styles = StyleSheet.create({
     color: "#333",
     fontSize: 14,
     fontWeight: "bold",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  cancelButton: {
+    backgroundColor: colors.white,
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  confirmButton: {
+    backgroundColor: "#333",
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 5,
   },
 });

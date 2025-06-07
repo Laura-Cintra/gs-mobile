@@ -51,6 +51,7 @@ export default function Dashboard() {
   const [modalIsSuccess, setModalIsSuccess] = useState(false);
   const [modoEdicao, setModoEdicao] = useState(false);
   const [reservatorioEmEdicao, setReservatorioEmEdicao] = useState(null);
+  const [isConfirmDelete, setIsConfirmDelete] = useState(false);
 
   useEffect(() => {
     const carregarHistorico = async () => {
@@ -336,7 +337,14 @@ export default function Dashboard() {
         >
           <Icon name="pencil-outline" size={24} color={colors.primary} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleExcluirReservatorio}>
+        <TouchableOpacity
+          onPress={() => {
+            setModalMessage(`Deseja realmente excluir o reservatório "${repoAtual?.nomeReservatorio}"?`);
+            setIsConfirmDelete(true);
+            setModalIsSuccess(false);
+            setModalErrorVisible(true);
+          }}
+        >
           <Icon name="trash-can-outline" size={24} color={colors.modalRed} />
         </TouchableOpacity>
       </View>
@@ -387,11 +395,29 @@ export default function Dashboard() {
         reservatorioInicial={modoEdicao ? reservatorioEmEdicao : null}
       />
 
-      <MessageModal
+      {/* <MessageModal
         visible={modalErrorVisible}
         message={modalMessage}
         isSuccess={modalIsSuccess}
         onClose={() => setModalErrorVisible(false)}
+      /> */}
+      <MessageModal
+        visible={modalErrorVisible}
+        message={modalMessage}
+        isSuccess={modalIsSuccess}
+        onClose={() => {
+          setModalErrorVisible(false);
+          setIsConfirmDelete(false);
+        }}
+        onConfirm={
+          isConfirmDelete
+            ? () => {
+                handleExcluirReservatorio();
+                setModalErrorVisible(false);
+                setIsConfirmDelete(false);
+              }
+            : undefined
+        }
       />
     </View>
   );
