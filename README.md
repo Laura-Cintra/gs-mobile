@@ -116,7 +116,11 @@ Após esse tempo inicial, o sistema responde normalmente com desempenho estável
     - Repositório da API: [`github.com/MariaEdPaixao/MaisAgua-API`](https://github.com/MariaEdPaixao/MaisAgua-API)
     - E no arquivo services/actions.js, troque a API_URL para 'http://localhost:8080'
 
-## 5. Integrantes
+## 5. Vídeo de Apresentação
+
+[`https://youtu.be/Aijzg8c_HaQ`](https://youtu.be/Aijzg8c_HaQ)
+
+## 6. Integrantes
 
     RM: 558843 Laura de Oliveira Cintra
     RM: 558832 Maria Eduarda Alves da Paixão
