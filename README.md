@@ -102,7 +102,21 @@ npx expo start --tunnel
 
 4. Escaneie o QR Code com o app Expo Go no seu celular
 
-## 4. Integrantes
+## 4. ⚠ Observação sobre o tempo de carregamento
+
+- A API utilizada neste projeto está hospedada na plataforma gratuita **Render**:  
+[`https://maisagua-api.onrender.com`](https://maisagua-api.onrender.com)
+
+Por se tratar de um serviço gratuito, o servidor entra em modo de hibernação automática após um período de inatividade, isso significa que **a primeira requisição pode levar até alguns minutos** para ser processada.
+
+Após esse tempo inicial, o sistema responde normalmente com desempenho estável.
+
+- **Dica:** Para testar com mais agilidade, você pode executar a API localmente:
+  
+    - Repositório da API: [`github.com/MariaEdPaixao/MaisAgua-API`](https://github.com/MariaEdPaixao/MaisAgua-API)
+    - E no arquivo services/actions.js, troque a API_URL para 'http://localhost:8080'
+
+## 5. Integrantes
 
     RM: 558843 Laura de Oliveira Cintra
     RM: 558832 Maria Eduarda Alves da Paixão
