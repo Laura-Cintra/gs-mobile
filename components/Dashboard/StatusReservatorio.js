@@ -4,7 +4,7 @@ import colors from "../../theme/colors";
 
 export default function StatusReservatorio({ leitura }) {
   const nivel = leitura?.nivelPct ?? 0;
-  const ph = leitura?.phInt ?? 0;
+  const ph = leitura?.ph ?? 0;
 
   let statusPh = "Desconhecido";
   let descPH = "Valor inválido";

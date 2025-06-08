@@ -5,7 +5,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import colors from "../theme/colors";
 import {
@@ -30,52 +30,30 @@ import ChuvaContainer from "../components/Dashboard/ChuvaContainer";
 import StatusReservatorio from "./Dashboard/StatusReservatorio";
 import Button from "./Formulario/Button";
 import MessageModal from "./MessageModal";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function Dashboard() {
   const { token, idUnidade, idReservatorio, saveIdReservatorio } = useUser();
 
   const [reservatorios, setReservatorios] = useState([]);
   const [repoAtual, setRepoAtual] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [modalCadastroVisible, setModalCadastroVisible] = useState(false);
-  const [clima, setClima] = useState(null);
   const [perfil, setPerfil] = useState(null);
+  const [clima, setClima] = useState(null);
   const [dadosStatus, setDadosStatus] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [historico, setHistorico] = useState([]);
   const [leituraAtual, setLeituraAtual] = useState(null);
   const [ultimoAlerta, setUltimoAlerta] = useState(null);
 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalCadastroVisible, setModalCadastroVisible] = useState(false);
   const [modalErrorVisible, setModalErrorVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalIsSuccess, setModalIsSuccess] = useState(false);
+
   const [modoEdicao, setModoEdicao] = useState(false);
   const [reservatorioEmEdicao, setReservatorioEmEdicao] = useState(null);
   const [isConfirmDelete, setIsConfirmDelete] = useState(false);
-
-  useEffect(() => {
-    const carregarHistorico = async () => {
-      if (!repoAtual?.idReservatorio) return;
-
-      try {
-        const historico = await fetchHistoricoReservatorio(
-          token,
-          repoAtual.idReservatorio
-        );
-        const ultimos7 = historico.slice(0, 7).reverse();
-        const dadosFormatados = ultimos7.map((item) => ({
-          value: item.nivelLitros,
-          label: item.data_hora.split("T")[0].split("-").reverse().join("/"),
-          frontColor: colors.primary,
-        }));
-        setHistorico(dadosFormatados);
-      } catch (err) {
-        console.error("Erro ao carregar histórico:", err);
-      }
-    };
-
-    carregarHistorico();
-  }, [repoAtual]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const carregarReservatorios = async () => {
@@ -104,100 +82,126 @@ export default function Dashboard() {
   }, [token, loading]);
 
   useEffect(() => {
-    if (loading || !repoAtual) return;
+    const carregarHistorico = async () => {
+      if (!repoAtual?.idReservatorio) return;
 
-    const carregarDistribuicaoStatus = async () => {
       try {
         const historico = await fetchHistoricoReservatorio(
           token,
           repoAtual.idReservatorio
         );
-
-        const statusCores = {
-          Cheio: "#4CAF50",
-          Normal: "#FFC107",
-          Baixo: "#2196F3",
-          Crítico: "#F44336",
-          Esvaziado: "#9E9E9E",
-        };
-
-        const contagem = {};
-
-        historico.forEach(({ status }) => {
-          const nome = status?.status;
-          if (nome) contagem[nome] = (contagem[nome] || 0) + 1;
-        });
-
-        const total = Object.values(contagem).reduce(
-          (acc, val) => acc + val,
-          0
-        );
-        if (total === 0) {
-          setDadosStatus([]);
-          return;
-        }
-
-        const formatado = Object.entries(contagem).map(([nome, qtd]) => ({
-          value: qtd,
-          color: statusCores[nome] || "#000",
-          text: nome,
+        const ultimos7 = historico.slice(0, 7).reverse();
+        const dadosFormatados = ultimos7.map((item) => ({
+          value: item.nivelLitros,
+          label: item.data_hora.split("T")[0].split("-").reverse().join("/"),
+          frontColor: colors.primary,
         }));
-
-        setDadosStatus(formatado);
+        setHistorico(dadosFormatados);
       } catch (err) {
-        console.error("Erro ao carregar status do gráfico de pizza:", err);
+        console.error("Erro ao carregar histórico:", err);
       }
     };
-    const carregarPerfilEClima = async () => {
-      try {
-        const perfilData = await fetchPerfilUsuario(
-          token,
-          repoAtual.idReservatorio
-        );
-        setPerfil(perfilData);
 
-        const enderecoData = await fetchEndereco(token);
-        const cidade = enderecoData?.cidade;
+    carregarHistorico();
+  }, [repoAtual]);
 
-        if (cidade) {
-          const climaData = await fetchClimaByCidade(cidade);
-          setClima(climaData);
-        } else {
-          setClima({ chance: 0, description: "Cidade não cadastrada" });
+  useFocusEffect(
+    useCallback(() => {
+      if (loading || !repoAtual) return;
+
+      const carregarDistribuicaoStatus = async () => {
+        try {
+          const historico = await fetchHistoricoReservatorio(
+            token,
+            repoAtual.idReservatorio
+          );
+
+          const statusCores = {
+            Cheio: "#4CAF50",
+            Normal: "#FFC107",
+            Baixo: "#2196F3",
+            Crítico: "#F44336",
+            Esvaziado: "#9E9E9E",
+          };
+
+          const contagem = {};
+          historico.forEach(({ status }) => {
+            const nome = status?.status;
+            if (nome) contagem[nome] = (contagem[nome] || 0) + 1;
+          });
+
+          const total = Object.values(contagem).reduce(
+            (acc, val) => acc + val,
+            0
+          );
+          if (total === 0) {
+            setDadosStatus([]);
+            return;
+          }
+
+          const formatado = Object.entries(contagem).map(([nome, qtd]) => ({
+            value: qtd,
+            color: statusCores[nome] || "#000",
+            text: nome,
+          }));
+
+          setDadosStatus(formatado);
+        } catch (err) {
+          console.error("Erro ao carregar status:", err);
         }
-      } catch (err) {
-        console.error("Erro ao carregar perfil/clima:", err);
-        setClima({ chance: 0, description: "Erro ao carregar dados" });
-      }
-    };
+      };
 
-    const carregarLeituraAtual = async () => {
-      try {
-        const leitura = await fetchLeituraDispositivo(
-          token,
-          repoAtual.idReservatorio
-        );
-        const ultimaLeitura =
-          leitura.content.length > 0
-            ? leitura.content[leitura.content.length - 1]
-            : null;
-        setLeituraAtual(ultimaLeitura);
-      } catch (err) {
-        console.error("Erro ao carregar leitura atual:", err);
-        setLeituraAtual(null);
-      }
-    };
+      const carregarPerfilEClima = async () => {
+        try {
+          const perfilData = await fetchPerfilUsuario(
+            token,
+            repoAtual.idReservatorio
+          );
+          setPerfil(perfilData);
 
-    carregarDistribuicaoStatus();
-    carregarPerfilEClima();
-    carregarLeituraAtual();
-  }, [repoAtual, loading]);
+          const enderecoData = await fetchEndereco(token);
+          const cidade = enderecoData?.cidade;
+
+          if (cidade) {
+            const climaData = await fetchClimaByCidade(cidade);
+            setClima(climaData);
+          } else {
+            setClima({ chance: 0, description: "Cidade não cadastrada" });
+          }
+        } catch (err) {
+          console.error("Erro ao carregar perfil/clima:", err);
+          setClima({ chance: 0, description: "Erro ao carregar dados" });
+        }
+      };
+
+      const carregarLeituraAtual = async () => {
+        try {
+          const leitura = await fetchLeituraDispositivo(
+            token,
+            repoAtual.idReservatorio
+          );
+          const ultimaLeitura =
+            leitura.content.length > 0
+              ? leitura.content[leitura.content.length - 1]
+              : null;
+          setLeituraAtual(ultimaLeitura);
+        } catch (err) {
+          console.error("Erro ao carregar leitura atual:", err);
+          setLeituraAtual(null);
+        }
+      };
+
+      carregarDistribuicaoStatus();
+      carregarPerfilEClima();
+      carregarLeituraAtual();
+    }, [repoAtual, loading])
+  );
 
   useEffect(() => {
     const carregarAlertaSimulado = async () => {
-      if (!repoAtual) return;
+      if (!repoAtual || !perfil) return;
 
-      const nivel = leituraAtual?.nivelPct ?? 0;
+      const nivel = perfil.nivelPct ?? 0;
 
       try {
         const notificacoes = await fetchNotificacoes(
@@ -212,7 +216,7 @@ export default function Dashboard() {
     };
 
     carregarAlertaSimulado();
-  }, [repoAtual, leituraAtual]);
+  }, [repoAtual, perfil]);
 
   const handleSalvarReservatorio = async (nome, capacidade) => {
     if (!nome || !capacidade || !idUnidade) {
@@ -339,7 +343,9 @@ export default function Dashboard() {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
-            setModalMessage(`Deseja realmente excluir o reservatório "${repoAtual?.nomeReservatorio}"?`);
+            setModalMessage(
+              `Deseja realmente excluir o reservatório "${repoAtual?.nomeReservatorio}"?`
+            );
             setIsConfirmDelete(true);
             setModalIsSuccess(false);
             setModalErrorVisible(true);
@@ -355,7 +361,7 @@ export default function Dashboard() {
         </Text>
       )}
 
-      <StatusReservatorio leitura={leituraAtual} />
+      <StatusReservatorio leitura={perfil} />
       <GraficoBarras dados={historico} />
 
       <View style={styles.graphRow}>
@@ -395,12 +401,6 @@ export default function Dashboard() {
         reservatorioInicial={modoEdicao ? reservatorioEmEdicao : null}
       />
 
-      {/* <MessageModal
-        visible={modalErrorVisible}
-        message={modalMessage}
-        isSuccess={modalIsSuccess}
-        onClose={() => setModalErrorVisible(false)}
-      /> */}
       <MessageModal
         visible={modalErrorVisible}
         message={modalMessage}

@@ -1,6 +1,5 @@
 // const API_URL = 'http://localhost:8080';
 const API_URL = "https://maisagua-api.onrender.com";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Função pra tratar erro
 const handleError = async (response) => {
